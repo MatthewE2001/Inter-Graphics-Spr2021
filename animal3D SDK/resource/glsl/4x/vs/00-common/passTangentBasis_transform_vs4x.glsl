@@ -37,14 +37,28 @@
 //	-> assign texture coordinate to varying
 
 layout (location = 0) in vec4 aPosition;
+layout (location = 2) in vec3 aNormal;
+layout (location = 8) in vec4 aTexture;
 
 flat out int vVertexID;
 flat out int vInstanceID;
 
+uniform mat4 uMV, uP, uMV_nrm;
+
+out vec4 vNormal;
+out vec4 vPosition;
+
 void main()
 {
 	// DUMMY OUTPUT: directly assign input position to output position
-	gl_Position = aPosition;
+	//gl_Position = aPosition;
+
+	//vNormal = aNormal;
+	//vPosition = aPosition;
+	vPosition = uMV * aPosition; //camera space 
+	vNormal = uMV_nrm * vec4(aNormal, 0.0); //camera space
+
+	gl_Position = uP * aPosition;
 
 	vVertexID = gl_VertexID;
 	vInstanceID = gl_InstanceID;

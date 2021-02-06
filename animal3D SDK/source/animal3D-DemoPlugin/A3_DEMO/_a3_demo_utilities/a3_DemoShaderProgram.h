@@ -95,6 +95,7 @@ extern "C"
 
 		// ****TO-DO: 
 		//	-> add lighting uniform and block handles
+		//add something with uLightPosition here (used in the render part)
 
 	};
 
