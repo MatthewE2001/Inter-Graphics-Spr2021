@@ -274,11 +274,10 @@ void a3intro_render(a3_DemoState const* demoState, a3_DemoMode0_Intro const* dem
 			// ****TO-DO: 
 			//	-> send model-view-projection matrix
 			//	-> send solid color (not a matrix)
-			//uMVP (model view projection matrix)
 			//vec4 color (rColor? sColor?)
 			//send out in a3shader function?
-			//a3shaderUniformSendFloatMat(a3unif_mat4, 0, currentDemoProgram->uMVP, )
-			
+			a3shaderUniformSendFloatMat(a3unif_mat4, 0, currentDemoProgram->uMVP, 1, a3mat4_identity.mm);
+			a3shaderUniformSendFloat(a3unif_vec4, 0, currentDemoProgram->uColor, 1, a3vec4_one); //idk if this works for sending color?
 
 			break;
 		}

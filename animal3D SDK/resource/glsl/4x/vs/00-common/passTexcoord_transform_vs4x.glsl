@@ -45,7 +45,7 @@ void main()
 	// DUMMY OUTPUT: directly assign input position to output position
 	gl_Position = aPosition;
 
-	vTexcoord = aTexcoord;
+	vTexcoord = aTexcoord; //this is assigning the attribute to varying
 
 	vVertexID = gl_VertexID;
 	vInstanceID = gl_InstanceID;
