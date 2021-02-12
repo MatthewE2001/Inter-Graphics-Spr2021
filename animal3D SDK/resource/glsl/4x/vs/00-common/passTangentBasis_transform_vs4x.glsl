@@ -47,6 +47,7 @@ uniform mat4 uMV, uP, uMV_nrm;
 
 out vec4 vNormal;
 out vec4 vPosition;
+out vec4 vTexture; //maybe?
 
 void main()
 {
@@ -57,6 +58,7 @@ void main()
 	//vPosition = aPosition;
 	vPosition = uMV * aPosition; //camera space 
 	vNormal = uMV_nrm * vec4(aNormal, 0.0); //camera space
+	vTexture = aTexture; //this might need to be different
 
 	gl_Position = uP * aPosition;
 

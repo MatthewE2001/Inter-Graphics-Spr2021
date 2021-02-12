@@ -31,7 +31,7 @@
 //	-> get color from sampler at texture coordinate
 //	-> assign color to output
 
-//uniform 
+//uniform usampler3D uSample;
 
 layout (location = 0) out vec4 rtFragColor;
 
