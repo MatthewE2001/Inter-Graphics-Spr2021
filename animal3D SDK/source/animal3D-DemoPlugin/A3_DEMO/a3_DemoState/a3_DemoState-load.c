@@ -446,15 +446,14 @@ void a3demo_loadShaders(a3_DemoState *demoState)
 
 			// vs
 			// base
-			//think I need to remove the e from these eventually as well
-			{ { { 0 },	"shdr-vs:passthru-trans",			a3shader_vertex  ,	1,{ A3_DEMO_VS"e/passthru_transform_vs4x.glsl" } } },// ****DECODE
+			{ { { 0 },	"shdr-vs:passthru-trans",			a3shader_vertex  ,	1,{ A3_DEMO_VS"../../../../resource/glsl/4x/vs/passthru_transform_vs4x.glsl" } } },// ****DECODE
 			{ { { 0 },	"shdr-vs:pass-col-trans",			a3shader_vertex  ,	1,{ A3_DEMO_VS"e/passColor_transform_vs4x.glsl" } } },
 			{ { { 0 },	"shdr-vs:passthru-trans-inst",		a3shader_vertex  ,	1,{ A3_DEMO_VS"e/passthru_transform_instanced_vs4x.glsl" } } },
 			{ { { 0 },	"shdr-vs:pass-col-trans-inst",		a3shader_vertex  ,	1,{ A3_DEMO_VS"e/passColor_transform_instanced_vs4x.glsl" } } },
 			// 00-common
 			//add the e/ to these for testing momentarily?
-			{ { { 0 },	"shdr-vs:pass-tex-trans",			a3shader_vertex  ,	1,{ A3_DEMO_VS"00-common/e/passTexcoord_transform_vs4x.glsl" } } },// ****DECODE
-			{ { { 0 },	"shdr-vs:pass-tb-trans",			a3shader_vertex  ,	1,{ A3_DEMO_VS"00-common/e/passTangentBasis_transform_vs4x.glsl" } } },// ****DECODE
+			{ { { 0 },	"shdr-vs:pass-tex-trans",			a3shader_vertex  ,	1,{ A3_DEMO_VS"../../../../resource/glsl/4x/vs/00-common/passTexcoord_transform_vs4x.glsl" } } },// ****DECODE
+			{ { { 0 },	"shdr-vs:pass-tb-trans",			a3shader_vertex  ,	1,{ A3_DEMO_VS"../../../../resource/glsl/4x/vs/00-common/passTangentBasis_transform_vs4x.glsl" } } },// ****DECODE
 			{ { { 0 },	"shdr-vs:pass-tex-trans-inst",		a3shader_vertex  ,	1,{ A3_DEMO_VS"00-common/e/passTexcoord_transform_instanced_vs4x.glsl" } } },
 			{ { { 0 },	"shdr-vs:pass-tb-trans-inst",		a3shader_vertex  ,	1,{ A3_DEMO_VS"00-common/e/passTangentBasis_transform_instanced_vs4x.glsl" } } },
 
@@ -465,14 +464,14 @@ void a3demo_loadShaders(a3_DemoState *demoState)
 
 			// fs
 			// base
-			{ { { 0 },	"shdr-fs:draw-col-unif",			a3shader_fragment,	1,{ A3_DEMO_FS"e/drawColorUnif_fs4x.glsl" } } },// ****DECODE
+			{ { { 0 },	"shdr-fs:draw-col-unif",			a3shader_fragment,	1,{ A3_DEMO_FS"../../../../resource/glsl/4x/fs/drawColorUnif_fs4x.glsl" } } },// ****DECODE
 			{ { { 0 },	"shdr-fs:draw-col-attr",			a3shader_fragment,	1,{ A3_DEMO_FS"e/drawColorAttrib_fs4x.glsl" } } },
 			// 00-common
-			{ { { 0 },	"shdr-fs:draw-tex",					a3shader_fragment,	1,{ A3_DEMO_FS"e/00-common/drawTexture_fs4x.glsl" } } },// ****DECODE
-			{ { { 0 },	"shdr-fs:draw-Lambert",				a3shader_fragment,	2,{ A3_DEMO_FS"e/00-common/drawLambert_fs4x.glsl",// ****DECODE
-																					A3_DEMO_FS"e/00-common/utilCommon_fs4x.glsl",} } },// ****DECODE
-			{ { { 0 },	"shdr-fs:draw-Phong",				a3shader_fragment,	2,{ A3_DEMO_FS"e/00-common/drawPhong_fs4x.glsl",// ****DECODE
-																					A3_DEMO_FS"e/00-common/utilCommon_fs4x.glsl",} } },// ****DECODE
+			{ { { 0 },	"shdr-fs:draw-tex",					a3shader_fragment,	1,{ A3_DEMO_FS"../../../../resource/glsl/4x/fs/00-common/drawTexture_fs4x.glsl" } } },// ****DECODE
+			{ { { 0 },	"shdr-fs:draw-Lambert",				a3shader_fragment,	2,{ A3_DEMO_FS"../../../../resource/glsl/4x/fs/00-common/drawLambert_fs4x.glsl",// ****DECODE
+																					A3_DEMO_FS"../../../../resource/glsl/4x/fs/00-common/utilCommon_fs4x.glsl",} } },// ****DECODE
+			{ { { 0 },	"shdr-fs:draw-Phong",				a3shader_fragment,	2,{ A3_DEMO_FS"../../../../resource/glsl/4x/fs/00-common/drawPhong_fs4x.glsl",// ****DECODE
+																					A3_DEMO_FS"../../../../resource/glsl/4x/fs/00-common/utilCommon_fs4x.glsl",} } },// ****DECODE
 		}
 	};
 	a3_DemoStateShader *const shaderListPtr = (a3_DemoStateShader *)(&shaderList), *shaderPtr;
