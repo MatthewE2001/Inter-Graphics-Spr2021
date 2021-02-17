@@ -836,8 +836,8 @@ void a3demo_loadTextures(a3_DemoState* demoState)
 void a3demo_loadFramebuffers(a3_DemoState* demoState)
 {
 	// create framebuffers and change their texture settings if need be
-	//a3_Framebuffer* fbo;
-	//a3ui32 i, j;
+	a3_Framebuffer* fbo;
+	a3ui32 i, j;
 
 	// frame sizes
 	const a3ui16 frameWidth1 = demoState->frameWidth, frameHeight1 = demoState->frameHeight;
@@ -864,17 +864,22 @@ void a3demo_loadFramebuffers(a3_DemoState* demoState)
 	//		-> depth only
 	//		-> set of full-size MRT-color only
 	//		-> set of half/quarter/eighth-size color only
-/*	// initialize framebuffers: MRT, color and depth formats, size
+	// initialize framebuffers: MRT, color and depth formats, size
 	fbo = demoState->fbo_c16x4_d24s8;
 	a3framebufferCreate(fbo, "fbo:c16x4;d24s8",
 		4, a3fbo_colorRGBA16, a3fbo_depth24_stencil8,
 		frameWidth1, frameHeight1);
-	//...*/
+	fbo = demoState->fbo_d32;
+	a3framebufferCreate(fbo, "fbo:d32", 0, a3fbo_colorDisable, a3fbo_depth32, shadowMapSize, shadowMapSize);
+	//color targets is how many textures it goes to
+	//rgba16 is 16 bit color data
+	//32 bits for depth type, 24 goes to depth and 8 goes to stencil
+	//...
 
 
-	// ****TO-DO:
+	// ****DONE:
 	//	-> uncomment global framebuffer configuration
-/*	// change texture settings for all framebuffers
+	// change texture settings for all framebuffers
 	for (i = 0, fbo = demoState->framebuffer;
 		i < demoStateMaxCount_framebuffer;
 		++i, ++fbo)
@@ -894,7 +899,7 @@ void a3demo_loadFramebuffers(a3_DemoState* demoState)
 			a3textureChangeRepeatMode(a3tex_repeatClamp, a3tex_repeatClamp);
 			a3textureChangeFilterMode(a3tex_filterLinear);
 		}
-	}*/
+	}
 
 
 	// deactivate texture
@@ -931,8 +936,8 @@ void a3demo_loadValidate(a3_DemoState* demoState)
 		* const endTex = currentTex + demoStateMaxCount_texture;
 	// ****TO-DO:
 	//	-> uncomment framebuffer pointers
-/*	a3_Framebuffer* currentFBO = demoState->framebuffer,
-		* const endFBO = currentFBO + demoStateMaxCount_framebuffer;*/
+	a3_Framebuffer* currentFBO = demoState->framebuffer,
+		* const endFBO = currentFBO + demoStateMaxCount_framebuffer;
 
 	// set pointers to appropriate release callback for different asset types
 	while (currentBuff < endBuff)
@@ -947,8 +952,8 @@ void a3demo_loadValidate(a3_DemoState* demoState)
 		a3textureHandleUpdateReleaseCallback(currentTex++);
 	// ****TO-DO:
 	//	-> uncomment framebuffer update
-/*	while (currentFBO < endFBO)
-		a3framebufferHandleUpdateReleaseCallback(currentFBO++);*/
+	while (currentFBO < endFBO)
+		a3framebufferHandleUpdateReleaseCallback(currentFBO++);
 
 	// re-link specific object pointers for different asset types
 	currentBuff = demoState->vbo_staticSceneObjectDrawBuffer;
