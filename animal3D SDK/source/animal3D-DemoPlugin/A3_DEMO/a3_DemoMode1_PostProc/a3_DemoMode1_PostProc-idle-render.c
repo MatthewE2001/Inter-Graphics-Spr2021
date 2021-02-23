@@ -230,14 +230,26 @@ void a3postproc_render(a3_DemoState const* demoState, a3_DemoMode1_PostProc cons
 		1,
 	};
 
-	// ****TO-DO:
+	// ****DONE:
 	//	-> uncomment FBO target array
 	//	-> add pointer to target FBO for each pass
 	//		(hint: choose the most relevant one for each; all are unique)
 	// framebuffer target for each pass
 	const a3_Framebuffer* writeFBO[postproc_renderPass_max] = {
-		demoState->fbo_d32, demoState->fbo_c16x4_d24s8, demoState->fbo_c16x4, demoState->fbo_c32f, demoState->fbo_c16_szHalf,
-		demoState->fbo_c16_szQuarter, demoState->fbo_c16_szEighth
+		demoState->fbo_d32, //shadow
+		demoState->fbo_c16x4_d24s8, //scene
+		demoState->fbo_c16_szHalf, //then comes the half buffer for bright
+		//each buffer has to be unique, so add a + 1
+		demoState->fbo_c16_szHalf + 1, //then comes the half buffer for blur (for horizontal)
+		demoState->fbo_c16_szHalf + 2, //then comes the 2nd half buffer for blur (for vertical)
+		demoState->fbo_c16_szQuarter, //same as half but for quarter
+		demoState->fbo_c16_szQuarter + 1,
+		demoState->fbo_c16_szQuarter + 2,
+		demoState->fbo_c16_szEighth, //same as half and quarter but for 1/8th
+		demoState->fbo_c16_szEighth + 1,
+		demoState->fbo_c16_szEighth + 2,
+		//composite comes last
+		demoState->fbo_c16x4 //has all color, no need for the depth
 		//...
 	};
 
@@ -262,7 +274,7 @@ void a3postproc_render(a3_DemoState const* demoState, a3_DemoMode1_PostProc cons
 	};
 
 	// pixel size and effect axis
-	//a3vec2 pixelSize = a3vec2_one;
+	a3vec2 pixelSize = a3vec2_one;
 
 
 	//-------------------------------------------------------------------------
@@ -420,18 +432,94 @@ void a3postproc_render(a3_DemoState const* demoState, a3_DemoMode1_PostProc cons
 	currentWriteFBO = writeFBO[postproc_renderPassBright2];
 	a3framebufferActivate(currentWriteFBO);
 	a3vertexDrawableRenderActive();
-	//I believe this should do vertical blur for horizontal
+
+	//I believe this should do vertical blur for horizontal (by half)
 	currentDemoProgram = demoState->prog_postBlur;
 	a3shaderProgramActivate(currentDemoProgram->program);
+	pixelSize.x = 1 / (float)currentWriteFBO->frameWidth;
+	pixelSize.y = 0;
+	a3shaderUniformSendFloat(a3unif_vec2, currentDemoProgram->uAxis, 1, pixelSize.v);
 	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
 	currentWriteFBO = writeFBO[postproc_renderPassBlurH2];
 	a3framebufferActivate(currentWriteFBO);
 	a3vertexDrawableRenderActive();
-	//and this would be blur for vertical
+
+	//and this would be blur for vertical (for the half)
 	currentDemoProgram = demoState->prog_postBlur;
 	a3shaderProgramActivate(currentDemoProgram->program);
+	pixelSize.x = 0;
+	pixelSize.y = 1 / (float)currentWriteFBO->frameHeight;
+	a3shaderUniformSendFloat(a3unif_vec2, currentDemoProgram->uAxis, 1, pixelSize.v);
 	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
 	currentWriteFBO = writeFBO[postproc_renderPassBlurV2];
+	a3framebufferActivate(currentWriteFBO);
+	a3vertexDrawableRenderActive();
+
+	//second pass for bright?
+	currentDemoProgram = demoState->prog_postBright;
+	a3shaderProgramActivate(currentDemoProgram->program);
+	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
+	currentWriteFBO = writeFBO[postproc_renderPassBright4]; //I assume this is quarter bright?
+	a3framebufferActivate(currentWriteFBO);
+	a3vertexDrawableRenderActive();
+
+	//so this is the horizontal blur for quarters
+	currentDemoProgram = demoState->prog_postBlur;
+	a3shaderProgramActivate(currentDemoProgram->program);
+	pixelSize.x = 1 / (float)currentWriteFBO->frameWidth;
+	pixelSize.y = 0;
+	a3shaderUniformSendFloat(a3unif_vec2, currentDemoProgram->uAxis, 1, pixelSize.v);
+	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
+	currentWriteFBO = writeFBO[postproc_renderPassBlurH4];
+	a3framebufferActivate(currentWriteFBO);
+	a3vertexDrawableRenderActive();
+
+	//then the vertical for quarters
+	currentDemoProgram = demoState->prog_postBlur;
+	a3shaderProgramActivate(currentDemoProgram->program);
+	pixelSize.x = 0;
+	pixelSize.y = 1 / (float)currentWriteFBO->frameHeight;
+	a3shaderUniformSendFloat(a3unif_vec2, currentDemoProgram->uAxis, 1, pixelSize.v);
+	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
+	currentWriteFBO = writeFBO[postproc_renderPassBlurV4];
+	a3framebufferActivate(currentWriteFBO);
+	a3vertexDrawableRenderActive();
+
+	//now is the third bright pass
+	currentDemoProgram = demoState->prog_postBright;
+	a3shaderProgramActivate(currentDemoProgram->program);
+	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
+	currentWriteFBO = writeFBO[postproc_renderPassBright8]; //I assume this is 1/8 bright?
+	a3framebufferActivate(currentWriteFBO);
+	a3vertexDrawableRenderActive();
+
+	//then the 1/8 horizontal
+	currentDemoProgram = demoState->prog_postBlur;
+	a3shaderProgramActivate(currentDemoProgram->program);
+	pixelSize.x = 1 / (float)currentWriteFBO->frameWidth;
+	pixelSize.y = 0;
+	a3shaderUniformSendFloat(a3unif_vec2, currentDemoProgram->uAxis, 1, pixelSize.v);
+	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
+	currentWriteFBO = writeFBO[postproc_renderPassBlurH8];
+	a3framebufferActivate(currentWriteFBO);
+	a3vertexDrawableRenderActive();
+
+	//then the 1/8 vertical blur
+	currentDemoProgram = demoState->prog_postBlur;
+	a3shaderProgramActivate(currentDemoProgram->program);
+	pixelSize.x = 0;
+	pixelSize.y = 1 / (float)currentWriteFBO->frameHeight;
+	a3shaderUniformSendFloat(a3unif_vec2, currentDemoProgram->uAxis, 1, pixelSize.v);
+	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
+	currentWriteFBO = writeFBO[postproc_renderPassBlurV8];
+	a3framebufferActivate(currentWriteFBO);
+	a3vertexDrawableRenderActive();
+
+	//then finally the composite
+	currentDemoProgram = demoState->prog_postBlend;
+	a3shaderProgramActivate(currentDemoProgram->program);
+	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
+	currentWriteFBO = writeFBO[postproc_renderPassScene]; //just trying display for now (maybe should be scene?)
 	a3framebufferActivate(currentWriteFBO);
 	a3vertexDrawableRenderActive();
 	//...

@@ -873,12 +873,28 @@ void a3demo_loadFramebuffers(a3_DemoState* demoState)
 	a3framebufferCreate(fbo, "fbo:d32", 0, a3fbo_colorDisable, a3fbo_depth32, shadowMapSize, shadowMapSize);
 	fbo = demoState->fbo_c16x4;
 	a3framebufferCreate(fbo, "fbo:c16x4", 4, a3fbo_colorRGBA16, a3fbo_depthDisable, frameWidth1, frameHeight1); //these frame values might need to change
+	
 	fbo = demoState->fbo_c16_szEighth;
 	a3framebufferCreate(fbo, "fbo:c16_szEighth", 4, a3fbo_colorTargetMax, a3fbo_depthDisable, frameWidth8, frameHeight8); //maybe change color targets
+	fbo = demoState->fbo_c16_szEighth + 1;
+	a3framebufferCreate(fbo, "fbo:c16_szEighth + 1", 4, a3fbo_colorTargetMax, a3fbo_depthDisable, frameWidth8, frameHeight8);
+	fbo = demoState->fbo_c16_szEighth + 2;
+	a3framebufferCreate(fbo, "fbo:c16_szEighth + 2", 4, a3fbo_colorTargetMax, a3fbo_depthDisable, frameWidth8, frameHeight8);
+
 	fbo = demoState->fbo_c16_szHalf;
 	a3framebufferCreate(fbo, "fbo:c16_szHalf", 4, a3fbo_colorTargetMax, a3fbo_depthDisable, frameWidth2, frameHeight2); //maybe change color targets
+	fbo = demoState->fbo_c16_szHalf + 1;
+	a3framebufferCreate(fbo, "fbo:c16_szHalf + 1", 4, a3fbo_colorTargetMax, a3fbo_depthDisable, frameWidth2, frameHeight2);
+	fbo = demoState->fbo_c16_szHalf + 2;
+	a3framebufferCreate(fbo, "fbo:c16_szHalf + 2", 4, a3fbo_colorTargetMax, a3fbo_depthDisable, frameWidth2, frameHeight2);
+	
 	fbo = demoState->fbo_c16_szQuarter;
 	a3framebufferCreate(fbo, "fbo:c16_szQuarter", 4, a3fbo_colorTargetMax, a3fbo_depthDisable, frameWidth4, frameHeight4); //maybe change color targets
+	fbo = demoState->fbo_c16_szQuarter + 1;
+	a3framebufferCreate(fbo, "fbo:c16_szQuarter + 1", 4, a3fbo_colorTargetMax, a3fbo_depthDisable, frameWidth4, frameHeight4);
+	fbo = demoState->fbo_c16_szQuarter + 2;
+	a3framebufferCreate(fbo, "fbo:c16_szQuarter + 2", 4, a3fbo_colorTargetMax, a3fbo_depthDisable, frameWidth4, frameHeight4);
+
 	fbo = demoState->fbo_c32f;
 	a3framebufferCreate(fbo, "fbo:c32f", 4, a3fbo_colorRGBA32F, a3fbo_depthDisable, frameWidth1, frameHeight1);
 	//color targets is how many textures it goes to

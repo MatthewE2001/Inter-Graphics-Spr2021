@@ -32,6 +32,8 @@
 
 layout (location = 0) out vec4 rtFragColor;
 
+varying vec2 vTexcoord;
+
 void main()
 {
 	// DUMMY OUTPUT: all fragments are OPAQUE ORANGE
