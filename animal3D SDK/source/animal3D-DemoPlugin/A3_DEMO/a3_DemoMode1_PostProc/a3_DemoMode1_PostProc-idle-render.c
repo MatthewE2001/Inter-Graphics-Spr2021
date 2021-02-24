@@ -238,14 +238,14 @@ void a3postproc_render(a3_DemoState const* demoState, a3_DemoMode1_PostProc cons
 	const a3_Framebuffer* writeFBO[postproc_renderPass_max] = {
 		demoState->fbo_d32, //shadow
 		demoState->fbo_c16x4_d24s8, //scene
-		demoState->fbo_c16_szHalf, //then comes the half buffer for bright
+		demoState->fbo_c16_szHalf + 0, //then comes the half buffer for bright
 		//each buffer has to be unique, so add a + 1
 		demoState->fbo_c16_szHalf + 1, //then comes the half buffer for blur (for horizontal)
 		demoState->fbo_c16_szHalf + 2, //then comes the 2nd half buffer for blur (for vertical)
-		demoState->fbo_c16_szQuarter, //same as half but for quarter
+		demoState->fbo_c16_szQuarter + 0, //same as half but for quarter
 		demoState->fbo_c16_szQuarter + 1,
 		demoState->fbo_c16_szQuarter + 2,
-		demoState->fbo_c16_szEighth, //same as half and quarter but for 1/8th
+		demoState->fbo_c16_szEighth + 0, //same as half and quarter but for 1/8th
 		demoState->fbo_c16_szEighth + 1,
 		demoState->fbo_c16_szEighth + 2,
 		//composite comes last
@@ -422,7 +422,7 @@ void a3postproc_render(a3_DemoState const* demoState, a3_DemoMode1_PostProc cons
 	//		-> blur in other direction (e.g. vertical)
 	//	-> composite original scene result with final blur iteration results
 
-	// ****TO-DO:
+	// ****DONE:
 	//	-> uncomment first post-processing pass
 	//	-> implement bloom pipeline following the above algorithm
 	//		(hint: this is the entirety of the first bright pass)
@@ -445,8 +445,6 @@ void a3postproc_render(a3_DemoState const* demoState, a3_DemoMode1_PostProc cons
 	a3vertexDrawableRenderActive();
 
 	//and this would be blur for vertical (for the half)
-	currentDemoProgram = demoState->prog_postBlur;
-	a3shaderProgramActivate(currentDemoProgram->program);
 	pixelSize.x = 0;
 	pixelSize.y = 1 / (float)currentWriteFBO->frameHeight;
 	a3shaderUniformSendFloat(a3unif_vec2, currentDemoProgram->uAxis, 1, pixelSize.v);
@@ -475,8 +473,6 @@ void a3postproc_render(a3_DemoState const* demoState, a3_DemoMode1_PostProc cons
 	a3vertexDrawableRenderActive();
 
 	//then the vertical for quarters
-	currentDemoProgram = demoState->prog_postBlur;
-	a3shaderProgramActivate(currentDemoProgram->program);
 	pixelSize.x = 0;
 	pixelSize.y = 1 / (float)currentWriteFBO->frameHeight;
 	a3shaderUniformSendFloat(a3unif_vec2, currentDemoProgram->uAxis, 1, pixelSize.v);
@@ -505,8 +501,6 @@ void a3postproc_render(a3_DemoState const* demoState, a3_DemoMode1_PostProc cons
 	a3vertexDrawableRenderActive();
 
 	//then the 1/8 vertical blur
-	currentDemoProgram = demoState->prog_postBlur;
-	a3shaderProgramActivate(currentDemoProgram->program);
 	pixelSize.x = 0;
 	pixelSize.y = 1 / (float)currentWriteFBO->frameHeight;
 	a3shaderUniformSendFloat(a3unif_vec2, currentDemoProgram->uAxis, 1, pixelSize.v);
@@ -518,8 +512,11 @@ void a3postproc_render(a3_DemoState const* demoState, a3_DemoMode1_PostProc cons
 	//then finally the composite
 	currentDemoProgram = demoState->prog_postBlend;
 	a3shaderProgramActivate(currentDemoProgram->program);
-	a3framebufferBindColorTexture(currentWriteFBO, a3tex_unit00, 0);
-	currentWriteFBO = writeFBO[postproc_renderPassScene]; //just trying display for now (maybe should be scene?)
+	a3framebufferBindColorTexture(writeFBO[postproc_renderPassScene], a3tex_unit00, 0); //need the scene and the 3 vertical blurs
+	a3framebufferBindColorTexture(writeFBO[postproc_renderPassBlurV2], a3tex_unit01, 0);
+	a3framebufferBindColorTexture(writeFBO[postproc_renderPassBlurV4], a3tex_unit02, 0);
+	a3framebufferBindColorTexture(writeFBO[postproc_renderPassBlurV8], a3tex_unit03, 0);
+	currentWriteFBO = writeFBO[postproc_renderPassDisplay]; //just trying display for now (maybe should be scene?)
 	a3framebufferActivate(currentWriteFBO);
 	a3vertexDrawableRenderActive();
 	//...

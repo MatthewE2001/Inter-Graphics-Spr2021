@@ -855,7 +855,7 @@ void a3demo_loadFramebuffers(a3_DemoState* demoState)
 	const a3ui32 targets_composite = 1;
 
 
-	// ****TO-DO: //want to check this stage
+	// ****DONE?: //want to check this stage
 	//	-> uncomment framebuffer initialization
 	//	-> initialize all framebuffers
 	//		(hint: their names describe their features)
@@ -875,25 +875,25 @@ void a3demo_loadFramebuffers(a3_DemoState* demoState)
 	a3framebufferCreate(fbo, "fbo:c16x4", 4, a3fbo_colorRGBA16, a3fbo_depthDisable, frameWidth1, frameHeight1); //these frame values might need to change
 	
 	fbo = demoState->fbo_c16_szEighth;
-	a3framebufferCreate(fbo, "fbo:c16_szEighth", 4, a3fbo_colorTargetMax, a3fbo_depthDisable, frameWidth8, frameHeight8); //maybe change color targets
+	a3framebufferCreate(fbo, "fbo:c16_szEighth", 4, a3fbo_colorRGBA16, a3fbo_depthDisable, frameWidth8, frameHeight8); //maybe change color targets
 	fbo = demoState->fbo_c16_szEighth + 1;
-	a3framebufferCreate(fbo, "fbo:c16_szEighth + 1", 4, a3fbo_colorTargetMax, a3fbo_depthDisable, frameWidth8, frameHeight8);
+	a3framebufferCreate(fbo, "fbo:c16_szEighth + 1", 4, a3fbo_colorRGBA16, a3fbo_depthDisable, frameWidth8, frameHeight8);
 	fbo = demoState->fbo_c16_szEighth + 2;
-	a3framebufferCreate(fbo, "fbo:c16_szEighth + 2", 4, a3fbo_colorTargetMax, a3fbo_depthDisable, frameWidth8, frameHeight8);
+	a3framebufferCreate(fbo, "fbo:c16_szEighth + 2", 4, a3fbo_colorRGBA16, a3fbo_depthDisable, frameWidth8, frameHeight8);
 
 	fbo = demoState->fbo_c16_szHalf;
-	a3framebufferCreate(fbo, "fbo:c16_szHalf", 4, a3fbo_colorTargetMax, a3fbo_depthDisable, frameWidth2, frameHeight2); //maybe change color targets
+	a3framebufferCreate(fbo, "fbo:c16_szHalf", 4, a3fbo_colorRGBA16, a3fbo_depthDisable, frameWidth2, frameHeight2); //maybe change color targets
 	fbo = demoState->fbo_c16_szHalf + 1;
-	a3framebufferCreate(fbo, "fbo:c16_szHalf + 1", 4, a3fbo_colorTargetMax, a3fbo_depthDisable, frameWidth2, frameHeight2);
+	a3framebufferCreate(fbo, "fbo:c16_szHalf + 1", 4, a3fbo_colorRGBA16, a3fbo_depthDisable, frameWidth2, frameHeight2);
 	fbo = demoState->fbo_c16_szHalf + 2;
-	a3framebufferCreate(fbo, "fbo:c16_szHalf + 2", 4, a3fbo_colorTargetMax, a3fbo_depthDisable, frameWidth2, frameHeight2);
+	a3framebufferCreate(fbo, "fbo:c16_szHalf + 2", 4, a3fbo_colorRGBA16, a3fbo_depthDisable, frameWidth2, frameHeight2);
 	
 	fbo = demoState->fbo_c16_szQuarter;
-	a3framebufferCreate(fbo, "fbo:c16_szQuarter", 4, a3fbo_colorTargetMax, a3fbo_depthDisable, frameWidth4, frameHeight4); //maybe change color targets
+	a3framebufferCreate(fbo, "fbo:c16_szQuarter", 4, a3fbo_colorRGBA16, a3fbo_depthDisable, frameWidth4, frameHeight4); //maybe change color targets
 	fbo = demoState->fbo_c16_szQuarter + 1;
-	a3framebufferCreate(fbo, "fbo:c16_szQuarter + 1", 4, a3fbo_colorTargetMax, a3fbo_depthDisable, frameWidth4, frameHeight4);
+	a3framebufferCreate(fbo, "fbo:c16_szQuarter + 1", 4, a3fbo_colorRGBA16, a3fbo_depthDisable, frameWidth4, frameHeight4);
 	fbo = demoState->fbo_c16_szQuarter + 2;
-	a3framebufferCreate(fbo, "fbo:c16_szQuarter + 2", 4, a3fbo_colorTargetMax, a3fbo_depthDisable, frameWidth4, frameHeight4);
+	a3framebufferCreate(fbo, "fbo:c16_szQuarter + 2", 4, a3fbo_colorRGBA16, a3fbo_depthDisable, frameWidth4, frameHeight4);
 
 	fbo = demoState->fbo_c32f;
 	a3framebufferCreate(fbo, "fbo:c32f", 4, a3fbo_colorRGBA32F, a3fbo_depthDisable, frameWidth1, frameHeight1);
@@ -960,7 +960,7 @@ void a3demo_loadValidate(a3_DemoState* demoState)
 		* const endUBO = currentUBO + demoStateMaxCount_uniformBuffer;
 	a3_Texture* currentTex = demoState->texture,
 		* const endTex = currentTex + demoStateMaxCount_texture;
-	// ****TO-DO:
+	// ****DONE:
 	//	-> uncomment framebuffer pointers
 	a3_Framebuffer* currentFBO = demoState->framebuffer,
 		* const endFBO = currentFBO + demoStateMaxCount_framebuffer;
@@ -976,7 +976,7 @@ void a3demo_loadValidate(a3_DemoState* demoState)
 		a3bufferHandleUpdateReleaseCallback(currentUBO++);
 	while (currentTex < endTex)
 		a3textureHandleUpdateReleaseCallback(currentTex++);
-	// ****TO-DO: //this might be done
+	// ****DONE: //this might be done
 	//	-> uncomment framebuffer update
 	while (currentFBO < endFBO)
 		a3framebufferHandleUpdateReleaseCallback(currentFBO++);
