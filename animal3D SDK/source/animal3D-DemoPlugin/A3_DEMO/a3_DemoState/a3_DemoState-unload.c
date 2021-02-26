@@ -87,7 +87,7 @@ void a3demo_unloadTextures(a3_DemoState* demoState)
 // utility to unload framebuffers
 void a3demo_unloadFramebuffers(a3_DemoState* demoState)
 {
-	// ****TO-DO: //is this done?
+	// ****DONE: //is this done?
 	//	-> uncomment framebuffer unloading
 	a3_Framebuffer* currentFBO = demoState->framebuffer,
 		* const endFBO = currentFBO + demoStateMaxCount_framebuffer;
@@ -113,7 +113,7 @@ void a3demo_unloadValidate(const a3_DemoState* demoState)
 		* const endUBO = currentUBO + demoStateMaxCount_uniformBuffer;
 	const a3_Texture* currentTex = demoState->texture,
 		* const endTex = currentTex + demoStateMaxCount_texture;
-	// ****TO-DO: //is this done?
+	// ****DONE: //is this done?
 	//	-> uncomment framebuffer pointers
 	const a3_Framebuffer* currentFBO = demoState->framebuffer,
 		* const endFBO = currentFBO + demoStateMaxCount_framebuffer;
@@ -148,7 +148,7 @@ void a3demo_unloadValidate(const a3_DemoState* demoState)
 	if (handle)
 		printf("\n A3 Warning: One or more textures not released.");
 
-	// ****TO-DO: //done?
+	// ****DONE: //done?
 	//	-> uncomment framebuffer validation
 	handle = 0;
 	while (currentFBO < endFBO)

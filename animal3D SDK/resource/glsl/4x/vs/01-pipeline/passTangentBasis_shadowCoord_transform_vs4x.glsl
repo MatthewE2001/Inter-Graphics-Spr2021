@@ -42,7 +42,15 @@
 //		(hint: transformation sequence is model-view-projection-bias)
 //	-> declare and write varying for shadow coordinate
 
+/*
+I made changes within this file - Matthew Esslie
+
+They are heavily based on the blue book code pg. 621 of the pdf
+*/
+
 layout (location = 0) in vec4 aPosition;
+layout (location = 2) in vec3 aNormal;
+layout (location = 8) in vec2 aTexcoord;
 
 flat out int vVertexID;
 flat out int vInstanceID;
@@ -80,13 +88,30 @@ uniform ubTransformStack
 	sModelMatrixStack uModel[16];
 };
 
+out vec4 vShadowcoord;
+out vec4 vNormal;
+out vec4 vView;
+out vec2 vTexcoord;
+out vec4 vPosition;
+
+mat4 shadowMatrix;
+
 void main()
 {
 	// DUMMY OUTPUT: directly assign input position to output position
 	//gl_Position = aPosition;
 
-	gl_Position = uCamera.projectionMat * uModel[uIndex].modelViewMat * aPosition;
+	vPosition = uModel[uIndex].modelViewMat * aPosition;
+	gl_Position = uCamera.projectionMat * vPosition;
 
 	vVertexID = gl_VertexID;
 	vInstanceID = gl_InstanceID;
+
+	shadowMatrix = uLight.viewProjectionBiasMat * uModel[uIndex].modelMat;
+
+	vShadowcoord = shadowMatrix * aPosition;
+
+	vNormal = uModel[uIndex].modelViewMat * vec4(aNormal, 1.0);
+	vTexcoord = aTexcoord;
+	vView = -vPosition;
 }

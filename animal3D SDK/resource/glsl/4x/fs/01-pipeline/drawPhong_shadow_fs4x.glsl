@@ -33,12 +33,76 @@
 //	-> perform manual "perspective divide" on shadow coordinate
 //	-> perform "shadow test" (explained in class)
 
+/*
+I made changes within this file - Matthew Esslie
+
+They are heavily based on the blue book code pg. 622 of the pdf
+*/
+
 layout (location = 0) out vec4 rtFragColor;
 
 uniform int uCount;
 
+in vec4 vShadowcoord;
+in vec4 vNormal;
+in vec4 vView;
+in vec2 vTexcoord;
+in vec4 vPosition;
+
+float shine = 120.0;
+
+uniform sampler2D uAtlas;
+uniform sampler2D uTex_shadow;
+
+layout (binding = 0) uniform sampler2D image;
+
+
+struct sPointLightData
+{
+	vec4 position;
+	vec4 worldPos;
+	vec4 color;
+	float radius;
+	float radiusSq;
+	float radiusinv;
+	float radiusinvSq;
+};
+
+uniform ubLight
+{
+	sPointLightData uLightData[4];
+};
+
+//declare shadow map texture here
+
 void main()
 {
+	vec4 nView = normalize(vView);
+	vec4 nNormal = normalize(vNormal); //I have it set to nNormal, nLight, nView so I know they are the normalized ones
+	vec4 materialColor = texture2D(uAtlas, vTexcoord);
+	vec3 shadowColor = textureProj(uTex_shadow, vShadowcoord).rgb; 
+	rtFragColor = vec4(0.0);
 	// DUMMY OUTPUT: all fragments are OPAQUE MAGENTA
-	rtFragColor = vec4(1.0, 0.0, 1.0, 1.0);
+	
+	for (int i = 0; i < uCount; i++)
+	{
+		vec4 nLight = normalize(uLightData[i].position - vPosition); //to get light to model location
+
+		float lightDistance = length(nLight);
+
+		vec4 reflection = reflect(-nLight, nNormal);
+
+		vec4 diffuse = max(dot(nNormal, nLight), 0.0) * materialColor;
+		vec4 specular = pow(max(dot(reflection, nView), 0.0), shine) * materialColor;
+
+		vec4 specularColor = uLightData[i].color * specular;
+		vec4 diffuseColor = uLightData[i].color * diffuse;
+
+		vec4 phong = diffuseColor + specularColor;
+
+		//rtFragColor = vec4(1.0, 0.0, 1.0, 1.0);
+		rtFragColor += phong;
+	}
+
+	rtFragColor *= vec4(shadowColor, 1.0);
 }
