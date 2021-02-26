@@ -24,7 +24,7 @@
 
 #version 450
 
-// ****TO-DO:
+// ****DONE?:
 // 1) Phong shading
 //	-> identical to outcome of last project
 // 2) shadow mapping
@@ -33,39 +33,32 @@
 //	-> perform manual "perspective divide" on shadow coordinate
 //	-> perform "shadow test" (explained in class)
 
-/*
-I made changes within this file - Matthew Esslie
-
-They are heavily based on the blue book code pg. 622 of the pdf
-*/
-
 layout (location = 0) out vec4 rtFragColor;
-
+layout (binding = 0) uniform sampler2D image;
 uniform int uCount;
 
-in vec4 vShadowcoord;
-in vec4 vNormal;
-in vec4 vView;
-in vec2 vTexcoord;
-in vec4 vPosition;
-
-float shine = 120.0;
-
-uniform sampler2D uAtlas;
 uniform sampler2D uTex_shadow;
 
-layout (binding = 0) uniform sampler2D image;
 
+in vec4 vShadowcoord;
+in vec4 vPosition;
+in vec4 vNormal;
+in vec2 vTexcoord;
+in vec4 vView;
+
+uniform sampler2D uAtlas;
+
+float shininess = 128.0;
 
 struct sPointLightData
 {
-	vec4 position;
-	vec4 worldPos;
-	vec4 color;
-	float radius;
-	float radiusSq;
-	float radiusinv;
-	float radiusinvSq;
+	vec4 position;					// position in rendering target space
+	vec4 worldPos;					// original position in world space
+	vec4 color;						// RGB color with padding
+	float radius;						// radius (distance of effect from center)
+	float radiusSq;					// radius squared (if needed)
+	float radiusInv;					// radius inverse (attenuation factor)
+	float radiusInvSq;					// radius inverse squared (attenuation factor)
 };
 
 uniform ubLight
@@ -73,36 +66,41 @@ uniform ubLight
 	sPointLightData uLightData[4];
 };
 
-//declare shadow map texture here
 
 void main()
 {
-	vec4 nView = normalize(vView);
-	vec4 nNormal = normalize(vNormal); //I have it set to nNormal, nLight, nView so I know they are the normalized ones
-	vec4 materialColor = texture2D(uAtlas, vTexcoord);
-	vec3 shadowColor = textureProj(uTex_shadow, vShadowcoord).rgb; 
+	// DUMMY OUTPUT: all fragments are OPAQUE LIME
 	rtFragColor = vec4(0.0);
-	// DUMMY OUTPUT: all fragments are OPAQUE MAGENTA
-	
-	for (int i = 0; i < uCount; i++)
+
+	// diffuse coeff = dot(unit surface normal,
+	//                     unit light vector)
+
+	vec4 V = normalize(vView);
+	vec4 N = normalize(vNormal);
+	vec4 materialColor = texture2D(image, vTexcoord); //Getting the pixelColor from the sampler
+	vec3 shadowColor = textureProj(uTex_shadow, vShadowcoord).rgb;
+	for(int i = 0; i < uCount; i++)
 	{
-		vec4 nLight = normalize(uLightData[i].position - vPosition); //to get light to model location
+		vec4 L = normalize(uLightData[i].position - vPosition);
 
-		float lightDistance = length(nLight);
+		float lightDistance = length(L);
 
-		vec4 reflection = reflect(-nLight, nNormal);
+		vec4 reflection = reflect(-L, N); //The reflection for the specular calculation
 
-		vec4 diffuse = max(dot(nNormal, nLight), 0.0) * materialColor;
-		vec4 specular = pow(max(dot(reflection, nView), 0.0), shine) * materialColor;
+		vec4 diffuse = max(dot(N, L), 0.0) * materialColor;
 
-		vec4 specularColor = uLightData[i].color * specular;
-		vec4 diffuseColor = uLightData[i].color * diffuse;
+		vec4 specular = pow(max(dot(reflection, V), 0.0), shininess) * materialColor;
+
+		vec4 specularColor = uLightData[i].color * specular; //The specular color
+
+		vec4 diffuseColor =uLightData[i].color * diffuse; //the diffuse color
 
 		vec4 phong = diffuseColor + specularColor;
 
-		//rtFragColor = vec4(1.0, 0.0, 1.0, 1.0);
 		rtFragColor += phong;
 	}
-
-	rtFragColor *= vec4(shadowColor, 1.0);
+	rtFragColor *=  vec4(shadowColor, 1.0);
+	// DEBUGGING
+	//rtFragColor = vec4(kd,kd,kd,1.0);
 }
+
