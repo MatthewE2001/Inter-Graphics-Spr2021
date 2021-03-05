@@ -388,6 +388,10 @@ void a3ssfx_render(a3_DemoState const* demoState, a3_DemoMode2_SSFX const* demoM
 		currentDemoProgram = demoState->prog_postDeferredShading;
 		a3shaderProgramActivate(currentDemoProgram->program);
 		a3textureActivate(demoState->tex_atlas_dm, a3tex_unit00); // diffuse texture atlas
+		a3framebufferBindColorTexture(demoState->fbo_c16x4_d24s8, a3tex_unit04, 0); //the 0, 1, 3 come from the g buffer locations
+		a3framebufferBindColorTexture(demoState->fbo_c16x4_d24s8, a3tex_unit05, 1);
+		a3framebufferBindColorTexture(demoState->fbo_c16x4_d24s8, a3tex_unit06, 3);
+		a3framebufferBindDepthTexture(demoState->fbo_c16x4_d24s8, a3tex_unit07);
 		//...
 		break;
 	case ssfx_renderModePhongDL:

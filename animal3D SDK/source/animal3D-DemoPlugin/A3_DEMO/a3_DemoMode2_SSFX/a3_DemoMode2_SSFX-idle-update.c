@@ -122,7 +122,7 @@ void a3ssfx_update_scene(a3_DemoState* demoState, a3_DemoMode2_SSFX* demoMode, a
 	{
 		a3real4Real4x4Product(pointLightData->position.v,
 			projector->sceneObjectPtr->modelMatrixStackPtr->modelMatInverse.m,
-			pointLightData->worldPos.v);
+			pointLightData->worldPos.v); //this got the view space position
 
 		// ****TO-DO:
 		//	-> calculate light transformation
@@ -131,9 +131,7 @@ void a3ssfx_update_scene(a3_DemoState* demoState, a3_DemoMode2_SSFX* demoMode, a
 		//			projection matrix to arrive at a proper MVP for each light)
 		// update and transform light matrix
 
-		//what does it mean by the scale part here? I can multiply position by a projection matrix easily
-			//then I move update it all by the light matrix?
-		//projector->sceneObjectPtr->modelMatrixStackPtr->modelViewProjectionMat.m
+		//view space position calculation is important because out of the model view projection, we have model view (?) done
 		//...
 	}
 }
