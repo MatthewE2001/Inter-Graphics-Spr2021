@@ -62,11 +62,19 @@ flat out int vInstanceID;
 out vec4 vPosition;
 out vec4 vNormal;
 out vec4 vTexcoord;
+out vec4 vPosition_screen;
+
+const mat4 bias = mat4 (
+0.5, 0, 0, 0,
+0, 0.5, 0, 0,
+0, 0, 0.5, 0,
+0.5, 0.5, 0.5, 1);
 
 void main()
 {
 	// DUMMY OUTPUT: directly assign input position to output position
 	gl_Position = uModelMatrixStack[uIndex].modelViewProjectionMat * aPosition;
+	vPosition_screen = bias * gl_Position;
 
 	//transform to view space, end goal is clip space
 		//need the model view projection matrix

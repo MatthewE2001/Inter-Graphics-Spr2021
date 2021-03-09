@@ -235,7 +235,7 @@ void a3ssfx_render(a3_DemoState const* demoState, a3_DemoMode2_SSFX const* demoM
 
 	// final model matrix and full matrix stack
 	a3mat4 projectionMat = activeCamera->projectorMatrixStackPtr->projectionMat;
-//	a3mat4 projectionBiasMatInv = activeCamera->projectorMatrixStackPtr->projectionBiasMatInverse;
+	a3mat4 projectionBiasMatInv = activeCamera->projectorMatrixStackPtr->projectionBiasMatInverse;
 	a3mat4 viewProjectionMat = activeCamera->projectorMatrixStackPtr->viewProjectionMat;
 	a3mat4 modelMat, modelViewMat, modelViewProjectionMat;
 
@@ -329,6 +329,19 @@ void a3ssfx_render(a3_DemoState const* demoState, a3_DemoMode2_SSFX const* demoM
 		// draw light volumes
 		currentDemoProgram = demoState->prog_drawPhongPointLight_instanced;
 		a3shaderProgramActivate(currentDemoProgram->program);
+		//active relevant textures (I believe)
+		a3framebufferBindColorTexture(demoState->fbo_c16x4_d24s8, a3tex_unit00, 0);	//scene
+		a3framebufferBindColorTexture(demoState->fbo_c16x4_d24s8, a3tex_unit04, 0); //the 0, 1, 3 come from the g buffer locations
+		a3framebufferBindColorTexture(demoState->fbo_c16x4_d24s8, a3tex_unit05, 1);
+		a3framebufferBindColorTexture(demoState->fbo_c16x4_d24s8, a3tex_unit06, 3);
+		a3framebufferBindDepthTexture(demoState->fbo_c16x4_d24s8, a3tex_unit07);
+		//inverse bias projection
+		a3shaderUniformSendFloatMat(a3unif_mat4, 0, currentDemoProgram->uPB_inv, 1, projectionBiasMatInv.mm);
+		//light buffer
+		a3shaderUniformBufferActivate(demoState->ubo_light, demoProg_blockLight); //idk if it should be blockLight?
+		//light transforms
+		a3shaderUniformBufferActivate(demoState->ubo_transform, demoProg_blockTransformStack);
+		//
 		//...
 
 		currentWriteFBO = writeFBO[ssfx_renderPassLights];
@@ -338,6 +351,9 @@ void a3ssfx_render(a3_DemoState const* demoState, a3_DemoMode2_SSFX const* demoM
 		// ****TO-DO:
 		//	-> draw many inverted instances of the unit sphere model (because 
 		//		point lights are spheres), and using additive blending
+		currentDemoProgram = demoState->prog_drawPhongPointLight_instanced;
+		a3shaderProgramActivate(currentDemoProgram->program);
+		a3vertexDrawableActivateAndRenderInstanced(demoState->draw_unit_cone, ssfxMaxCount_pointLight);
 
 	}
 
@@ -392,6 +408,10 @@ void a3ssfx_render(a3_DemoState const* demoState, a3_DemoMode2_SSFX const* demoM
 		a3framebufferBindColorTexture(demoState->fbo_c16x4_d24s8, a3tex_unit05, 1);
 		a3framebufferBindColorTexture(demoState->fbo_c16x4_d24s8, a3tex_unit06, 3);
 		a3framebufferBindDepthTexture(demoState->fbo_c16x4_d24s8, a3tex_unit07);
+
+		a3shaderUniformSendInt(a3unif_single, currentDemoProgram->uIndex, 1, renderModeLightCount);
+		a3shaderUniformBufferActivate(demoState->ubo_light, demoProg_blockLight);
+		a3shaderUniformSendFloatMat(a3unif_mat4, 0, currentDemoProgram->uPB_inv, 1, a3mat4_identity.mm); //inverse bias projection
 		//...
 		break;
 	case ssfx_renderModePhongDL:
@@ -404,6 +424,13 @@ void a3ssfx_render(a3_DemoState const* demoState, a3_DemoMode2_SSFX const* demoM
 		currentDemoProgram = demoState->prog_postDeferredLightingComposite;
 		a3shaderProgramActivate(currentDemoProgram->program);
 		a3textureActivate(demoState->tex_atlas_dm, a3tex_unit00); // diffuse texture atlas
+		a3framebufferBindColorTexture(demoState->fbo_c16x4_d24s8, a3tex_unit04, 0); //the 0, 1, 3 come from the g buffer locations
+		a3framebufferBindColorTexture(demoState->fbo_c16x4_d24s8, a3tex_unit05, 1);
+		a3framebufferBindColorTexture(demoState->fbo_c16x4_d24s8, a3tex_unit06, 3);
+		a3framebufferBindDepthTexture(demoState->fbo_c16x4_d24s8, a3tex_unit07);
+
+		//multiply light colors by texture sample
+
 		//...
 		break;
 	}

@@ -50,6 +50,8 @@ uniform sampler2D uImage05; //normal	gbuffer
 uniform sampler2D uImage06; //position	gbuffer //we also do not ever really use position
 uniform sampler2D uImage07; //depth		gbuffer
 
+uniform mat4 uPB_inv;
+
 layout (location = 0) out vec4 rtFragColor;
 
 void main()
@@ -61,6 +63,17 @@ void main()
 	vec4 diffuseSample = texture(uImage00, sceneTexcoord.xy);
 	vec4 specularSample = texture(uImage01, sceneTexcoord.xy);
 	rtFragColor = diffuseSample;
+
+	vec4 position_screen = vTexcoord_atlas;
+	position_screen.z = texture(uImage07, vTexcoord_atlas.xy).r;
+
+	vec4 position_view = uPB_inv * position_screen;
+	position_view /= position_view.w;
+
+	vec4 normal = texture(uImage05, vTexcoord_atlas.xy);
+	normal = (normal * 0.5) + 2.0;
+
+	rtFragColor = position_view;
 
 	//Phong shading
 		//ambient

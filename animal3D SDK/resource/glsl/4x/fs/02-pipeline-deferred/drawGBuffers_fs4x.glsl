@@ -40,6 +40,7 @@ layout (location = 3) out vec4 rtPosition;
 in vec4 vPosition;
 in vec4 vNormal;
 in vec4 vTexcoord;
+in vec4 vPosition_screen;
 
 void main()
 {
@@ -48,5 +49,6 @@ void main()
 
 	rtTexcoord = vTexcoord;
 	rtNormal = vec4(normalize(vNormal.xyz) * 0.5 + 0.5, 1.0);
-	rtPosition = vPosition;
+	//rtPosition = vPosition;
+	rtPosition = vPosition_screen / vPosition_screen.w;
 }
