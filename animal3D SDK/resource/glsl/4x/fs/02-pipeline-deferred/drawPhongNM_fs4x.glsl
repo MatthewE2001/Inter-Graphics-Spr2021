@@ -38,6 +38,32 @@
 
 uniform int uCount;
 
+//view space varyings
+in vec4 vPosition;
+in vec4 vNormal;
+in vec4 vTexcoord;
+in vec4 vPosition_screen;
+//declare point light data (matrix stack for the information I think)
+struct pointLightData
+{
+	vec4 position;					// position in rendering target space
+	vec4 worldPos;					// original position in world space
+	vec4 color;						// RGB color with padding
+	float radius;						// radius (distance of effect from center)
+	float radiusSq;					// radius squared (if needed)
+	float radiusInv;					// radius inverse (attenuation factor)
+	float radiusInvSq;					// radius inverse squared (attenuation factor)
+};
+//uniform block
+uniform uPointLightData
+{
+	pointLightData uLightData[MAX_LIGHTS]; //made it an array for max lights (maybe should be ucount?)
+};
+//uniform samplers
+uniform sampler2D uImage00; //idk if I need bindings for these? where does binding go? 
+uniform sampler2D uImage01;
+uniform sampler2D uImage02;
+
 layout (location = 0) out vec4 rtFragColor;
 
 // location of viewer in its own space is the origin
@@ -64,4 +90,9 @@ void main()
 {
 	// DUMMY OUTPUT: all fragments are OPAQUE MAGENTA
 	rtFragColor = vec4(1.0, 0.0, 1.0, 1.0);
+
+	for (int i = 0; i < uCount; i++) //ucount or max lights?
+	{
+		
+	}
 }
