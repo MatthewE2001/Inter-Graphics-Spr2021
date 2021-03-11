@@ -82,7 +82,7 @@ void main()
 	//currently we have the colors above (diffuseSample and specularSample)
 	//need the light data from the light data struct
 		//which is found in ubo light
-		//also need normals, position->
+		//also need normals, position->??
 
 	//Debugging
 	//rtFragColor = vTexcoord_atlas;

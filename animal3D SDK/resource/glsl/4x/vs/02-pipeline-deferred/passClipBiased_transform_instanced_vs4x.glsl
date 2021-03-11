@@ -46,10 +46,15 @@ const mat4 bias = mat4(
 	0.5, 0.5, 0.5, 1.0
 );
 
+varying vec4 biasClipPosition;
+
 void main()
 {
 	// DUMMY OUTPUT: directly assign input position to output position
-	gl_Position = aPosition;
+	//gl_Position = aPosition;
+
+	biasClipPosition = bias * aPosition; //I might need to come back to this? 
+	gl_Position = biasClipPosition;
 
 	vVertexID = gl_VertexID;
 	vInstanceID = gl_InstanceID;

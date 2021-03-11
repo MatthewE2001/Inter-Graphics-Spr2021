@@ -34,8 +34,24 @@ in vec4 vTexcoord_atlas;
 
 layout (location = 0) out vec4 rtFragColor;
 
+uniform sampler2D uImage00; //idk which name I need for this one? (the light pre pass here)
+//also need the samplers for texcoord, diffuse and specular
+	//I think these might be made back in another thing I code? 
+uniform sampler2D texcoordMap;
+uniform sampler2D diffuseMap;
+uniform sampler2D specularMap;
+
 void main()
 {
 	// DUMMY OUTPUT: all fragments are OPAQUE AQUA
 	rtFragColor = vec4(0.0, 1.0, 0.5, 1.0);
+
+	vec4 value; //I might sample and texture through this function to then put it into rtFragColor
+	//this is just a test so far to see if I wanna work stuff like this
+	value = texture(uImage00, vTexcoord_atlas.xy);
+	value += texture(texcoordMap ,vTexcoord_atlas.xy);
+	value += texture(diffuseMap ,vTexcoord_atlas.xy);
+	value += texture(specularMap ,vTexcoord_atlas.xy);
+
+	rtFragColor = value;
 }
