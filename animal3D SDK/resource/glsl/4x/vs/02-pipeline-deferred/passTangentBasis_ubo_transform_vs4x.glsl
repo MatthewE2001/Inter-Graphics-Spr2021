@@ -54,6 +54,7 @@ uniform ubTransformStack
 {
 	sModelMatrixStack uModelMatrixStack[MAX_OBJECTS];
 };
+
 uniform int uIndex;
 
 flat out int vVertexID;

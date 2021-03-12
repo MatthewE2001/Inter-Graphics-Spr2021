@@ -24,7 +24,7 @@
 
 #version 450
 
-// ****TO-DO:
+// ****DONE?:
 //	-> declare view-space varyings from vertex shader
 //	-> declare MRT for pertinent surface data (incoming attribute info)
 //		(hint: at least normal and texcoord are needed)
@@ -32,25 +32,30 @@
 //	-> calculate final normal
 //	-> output pertinent surface data
 
-//layout (location = 0) out vec4 rtFragColor;
-layout (location = 0) out vec4 rtTexcoord;
-layout (location = 1) out vec4 rtNormal;
-layout (location = 3) out vec4 rtPosition;
-
 in vec4 vPosition;
 in vec4 vNormal;
 in vec4 vTexcoord;
+
 in vec4 vPosition_screen;
 
-uniform sampler2D uImage05;
+//layout (location = 0) out vec4 rtFragColor;
+layout (location = 0) out vec4 rtTexcoord;
+layout (location = 1) out vec4 rtNormal;
+layout (location = 2) out vec4 rtDiffuse;
+layout (location = 3) out vec4 rtSpec;
+
+uniform sampler2D uImage00; // Diffuse Atlas
+uniform sampler2D uImage01; // Specular Atlas
+
 
 void main()
 {
 	// DUMMY OUTPUT: all fragments are OPAQUE MAGENTA
 	//rtFragColor = vec4(1.0, 0.0, 1.0, 1.0);
-
 	rtTexcoord = vTexcoord;
 	rtNormal = vec4(normalize(vNormal.xyz) * 0.5 + 0.5, 1.0);
 	//rtPosition = vPosition;
-	rtPosition = vPosition_screen / vPosition_screen.w;
+	//rtPosition = vPosition_screen / vPosition_screen.w; //Perspective divide. Done to convert clip space to screen space. Because bias is applied, it goes from -1 1 to 0 1
+	rtDiffuse = texture(uImage00, vTexcoord.xy);
+	rtSpec = texture(uImage01, vTexcoord.xy);
 }
