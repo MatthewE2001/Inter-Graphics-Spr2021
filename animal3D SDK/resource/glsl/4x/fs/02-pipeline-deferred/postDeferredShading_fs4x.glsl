@@ -51,6 +51,7 @@ uniform sampler2D uImage06; //position	gbuffer //we also do not ever really use 
 uniform sampler2D uImage07; //depth		gbuffer
 
 uniform mat4 uPB_inv;
+uniform mat4 ubo_light; //idk if I need this as well?
 
 layout (location = 0) out vec4 rtFragColor;
 
@@ -62,7 +63,10 @@ void main()
 	vec4 sceneTexcoord = texture(uImage04, vTexcoord_atlas.xy);
 	vec4 diffuseSample = texture(uImage00, sceneTexcoord.xy);
 	vec4 specularSample = texture(uImage01, sceneTexcoord.xy);
-	rtFragColor = diffuseSample;
+	vec4 diffuseLighting = vec4(1.0); //just temporary values for these two I think
+	vec4 specularLighting = vec4(1.0);
+	//rtFragColor = diffuseSample;
+	vec4 ambient;
 
 	vec4 position_screen = vTexcoord_atlas;
 	position_screen.z = texture(uImage07, vTexcoord_atlas.xy).r;
@@ -71,9 +75,9 @@ void main()
 	position_view /= position_view.w;
 
 	vec4 normal = texture(uImage05, vTexcoord_atlas.xy);
-	normal = (normal * 0.5) + 2.0;
+	normal = (normal * 0.5) + vec4(2.0);
 
-	rtFragColor = position_view;
+	//rtFragColor = position_view;
 
 	//Phong shading
 		//ambient
@@ -83,6 +87,9 @@ void main()
 	//need the light data from the light data struct
 		//which is found in ubo light
 		//also need normals, position->??
+	ambient += diffuseSample * diffuseLighting;
+	ambient += specularSample * specularLighting;
+	rtFragColor = ambient;
 
 	//Debugging
 	//rtFragColor = vTexcoord_atlas;

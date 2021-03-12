@@ -45,9 +45,37 @@ layout (location = 1) out vec4 rtSpecularLight;
 
 //not doing a loop of lights only one
 	//calculate the phong component of light for one light
+varying vec4 vBiasClipPosition; //maybe I need to bring it in as well
+
+struct pointLightData
+{
+	vec4 position;					// position in rendering target space
+	vec4 worldPos;					// original position in world space
+	vec4 color;						// RGB color with padding
+	float radius;						// radius (distance of effect from center)
+	float radiusSq;					// radius squared (if needed)
+	float radiusInv;					// radius inverse (attenuation factor)
+	float radiusInvSq;					// radius inverse squared (attenuation factor)
+};
+//uniform block
+uniform uPointLightData
+{
+	pointLightData uLightData[MAX_LIGHTS]; //made it an array for max lights (maybe should be ucount?)
+};
+
+uniform sampler2D uImage00; //diffuse?
+uniform sampler2D uImage01; //specular?
+uniform sampler2D uImage07; //depth
 
 void main()
 {
 	// DUMMY OUTPUT: all fragments are OPAQUE MAGENTA
 	//rtFragColor = vec4(1.0, 0.0, 1.0, 1.0);
-}
+	vec4 screen_space = vec4(vBiasClipPosition.x / vBiasClipPosition.w, vBiasClipPosition.y / vBiasClipPosition.w, 
+	vBiasClipPosition.z / vBiasClipPosition.w, 1.0);
+	vec4 diffuse = texture(uImage00, screen_space.xy);
+	vec4 specular = texture(uImage01, screen_space.xy);
+
+	
+	//rtDiffuseLight = diffuse;
+	//rtSpecularLight = specular;
