@@ -44,7 +44,7 @@ uniform sampler2D specularMap;
 void main()
 {
 	// DUMMY OUTPUT: all fragments are OPAQUE AQUA
-	rtFragColor = vec4(0.0, 1.0, 0.5, 1.0);
+	//rtFragColor = vec4(0.0, 1.0, 0.5, 1.0);
 
 	vec4 value; //I might sample and texture through this function to then put it into rtFragColor
 	//this is just a test so far to see if I wanna work stuff like this

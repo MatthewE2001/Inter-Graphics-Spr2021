@@ -348,7 +348,7 @@ void a3ssfx_render(a3_DemoState const* demoState, a3_DemoMode2_SSFX const* demoM
 		a3framebufferActivate(currentWriteFBO);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		// ****TO-DO:
+		// ****TO-DO: //done?
 		//	-> draw many inverted instances of the unit sphere model (because 
 		//		point lights are spheres), and using additive blending
 		currentDemoProgram = demoState->prog_drawPhongPointLight_instanced;
@@ -404,6 +404,7 @@ void a3ssfx_render(a3_DemoState const* demoState, a3_DemoMode2_SSFX const* demoM
 		currentDemoProgram = demoState->prog_postDeferredShading;
 		a3shaderProgramActivate(currentDemoProgram->program);
 		a3textureActivate(demoState->tex_atlas_dm, a3tex_unit00); // diffuse texture atlas
+		//a3framebufferBindColorTexture(demoState->fbo_c16x4_d24s8, a3tex_unit00, 0);
 		a3framebufferBindColorTexture(demoState->fbo_c16x4_d24s8, a3tex_unit04, 0); //the 0, 1, 3 come from the g buffer locations
 		a3framebufferBindColorTexture(demoState->fbo_c16x4_d24s8, a3tex_unit05, 1);
 		a3framebufferBindColorTexture(demoState->fbo_c16x4_d24s8, a3tex_unit06, 3);
@@ -411,8 +412,9 @@ void a3ssfx_render(a3_DemoState const* demoState, a3_DemoMode2_SSFX const* demoM
 
 		a3shaderUniformSendInt(a3unif_single, currentDemoProgram->uIndex, 1, renderModeLightCount);
 		a3shaderUniformBufferActivate(demoState->ubo_light, demoProg_blockLight);
-		a3shaderUniformSendFloatMat(a3unif_mat4, 0, currentDemoProgram->uPB_inv, 1, a3mat4_identity.mm); //inverse bias projection
-		//...
+		a3shaderUniformSendFloatMat(a3unif_mat4, 0, currentDemoProgram->uPB_inv, 1, projectionBiasMatInv.mm); //inverse bias projection
+		//a3real4x4Product(); //I feel like this has something to do with lights?
+																										 //...
 		break;
 	case ssfx_renderModePhongDL:
 		// ****TO-DO:
@@ -429,7 +431,7 @@ void a3ssfx_render(a3_DemoState const* demoState, a3_DemoMode2_SSFX const* demoM
 		a3framebufferBindColorTexture(demoState->fbo_c16x4_d24s8, a3tex_unit06, 3);
 		a3framebufferBindDepthTexture(demoState->fbo_c16x4_d24s8, a3tex_unit07);
 
-		//multiply light colors by texture sample
+		//multiply light colors by texture sample here?
 
 		//...
 		break;

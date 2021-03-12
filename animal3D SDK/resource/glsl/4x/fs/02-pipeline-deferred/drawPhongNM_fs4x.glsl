@@ -91,6 +91,7 @@ void main()
 	vec4 normal = texture(normalMap, vTexcoord.xy); //idk if this is exactly what I want or not
 	normal = normalize(normal * 2.0 - 1.0);
 	mat4 tbn; //tangent bitangent normal (also mat4 or mat3?)
+	
 
 	// DUMMY OUTPUT: all fragments are OPAQUE MAGENTA
 	rtFragColor = vec4(1.0, 0.0, 1.0, 1.0);
