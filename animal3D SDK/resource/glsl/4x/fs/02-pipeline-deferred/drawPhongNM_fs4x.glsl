@@ -62,9 +62,11 @@ uniform uPointLightData
 //uniform samplers
 uniform sampler2D uImage00; //idk if I need bindings for these? where does binding go? 
 uniform sampler2D uImage01;
-uniform sampler2D normalMap; //idk if it should be called exactly normalMap?
+uniform sampler2D uImage02; //idk if it should be called exactly normalMap?
+uniform sampler2D uAtlas;
 
 layout (location = 0) out vec4 rtFragColor;
+layout (location = 1) out vec4 rtNormal;
 
 // location of viewer in its own space is the origin
 const vec4 kEyePos_view = vec4(0.0, 0.0, 0.0, 1.0);
@@ -88,16 +90,29 @@ void calcPhongPoint(
 
 void main()
 {	
-	vec4 normal = texture(normalMap, vTexcoord.xy); //idk if this is exactly what I want or not
-	normal = normalize(normal * 2.0 - 1.0);
+	vec4 normal = texture(uImage02, vTexcoord.xy); //idk if this is exactly what I want or not
+	normal = normalize(normal * 2.0 - vec4(1.0));
 	mat4 tbn; //tangent bitangent normal (also mat4 or mat3?)
+	vec4 specularSum = vec4(0.0);
+	vec4 diffuseSum = vec4(0.0);
+	vec4 diffuse, specular;
+	vec4 color = texture(uAtlas, vTexcoord.xy);
 	
 
 	// DUMMY OUTPUT: all fragments are OPAQUE MAGENTA
-	rtFragColor = vec4(1.0, 0.0, 1.0, 1.0);
+	//rtFragColor = normal;
 
 	for (int i = 0; i < uCount; i++) //ucount or max lights?
 	{
-		
+		vec4 radiusInfo = vec4(uLightData[i].radius, uLightData[i].radiusSq, uLightData[i].radiusInv, uLightData[i].radiusInvSq);
+
+		calcPhongPoint(diffuse, specular, kEyePos_view, vPosition, normal, color, uLightData[i].position,
+		radiusInfo, uLightData[i].color);
+
+		diffuseSum += diffuse;
+		specularSum += specular;
 	}
+
+	rtFragColor = vec4(diffuseSum.xyz + specularSum.xyz, 1.0);
+	rtNormal = normal;
 }
