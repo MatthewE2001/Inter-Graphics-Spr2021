@@ -46,12 +46,35 @@ const mat4 bias = mat4(
 	0.5, 0.5, 0.5, 1.0
 );
 
-varying vec4 vBiasClipPosition;
+struct pointLightData
+{
+	vec4 position;					// position in rendering target space
+	vec4 worldPos;					// original position in world space
+	vec4 color;						// RGB color with padding
+	float radius;						// radius (distance of effect from center)
+	float radiusSq;					// radius squared (if needed)
+	float radiusInv;					// radius inverse (attenuation factor)
+	float radiusInvSq;					// radius inverse squared (attenuation factor)
+};
+//uniform block
+uniform uPointLightData
+{
+	pointLightData uLightData[MAX_INSTANCES]; //made it an array for max lights (maybe should be ucount?)
+};
+
+out vec4 vBiasClipPosition;
 
 void main()
 {
 	// DUMMY OUTPUT: directly assign input position to output position
 	//gl_Position = aPosition;
+	for (int i = 0; i < MAX_INSTANCES; i++)
+	{
+		vec4 finalClipSpace = uLightData[i].position - aPosition;
+		vBiasClipPosition = bias * finalClipSpace;
+
+		gl_Position = vBiasClipPosition;
+	}
 
 	vBiasClipPosition = bias * aPosition; //I might need to come back to this? 
 	gl_Position = vBiasClipPosition;

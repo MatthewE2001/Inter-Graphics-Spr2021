@@ -60,12 +60,14 @@ struct pointLightData
 //uniform block
 uniform uPointLightData
 {
-	pointLightData uLightData[MAX_LIGHTS]; //made it an array for max lights (maybe should be ucount?)
+	pointLightData uLightData; //made it an array for max lights (maybe should be ucount?)
 };
 
 uniform sampler2D uImage00; //diffuse?
 uniform sampler2D uImage01; //specular?
 uniform sampler2D uImage07; //depth
+
+float attenuation(in float dist, in float distSq, in float lightRadiusInv, in float lightRadiusInvSq);
 
 void main()
 {
@@ -75,7 +77,17 @@ void main()
 	vBiasClipPosition.z / vBiasClipPosition.w, 1.0);
 	vec4 diffuse = texture(uImage00, screen_space.xy);
 	vec4 specular = texture(uImage01, screen_space.xy);
+	vec4 depth = texture(uImage07, screen_space.xy); //screen_space here?
+	vec4 finalColor;
+	float attentuate;
+	float dist;
+	vec3 L = uLightData.position.xyz - vBiasClipPosition.xyz;
 
+	dist = length(L);
+	attentuate = attenuation(dist, pow(dist,2), uLightData.radiusInv, uLightData.radiusInvSq);
+	diffuse += uLightData.color * diffuse * attentuate;
+	specular += uLightData.color * specular * attentuate;
+	finalColor += vec4(diffuse.xyz + specular.xyz, 0.0);
 	
-	//rtDiffuseLight = diffuse;
-	//rtSpecularLight = specular;
+	rtDiffuseLight = diffuse;
+	rtSpecularLight = specular;

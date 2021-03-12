@@ -42,6 +42,8 @@ in vec4 vNormal;
 in vec4 vTexcoord;
 in vec4 vPosition_screen;
 
+uniform sampler2D uImage05;
+
 void main()
 {
 	// DUMMY OUTPUT: all fragments are OPAQUE MAGENTA

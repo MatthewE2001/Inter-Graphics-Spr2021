@@ -34,10 +34,9 @@ in vec4 vTexcoord_atlas;
 
 layout (location = 0) out vec4 rtFragColor;
 
-uniform sampler2D uImage01; //idk which name I need for this one? (the light pre pass here)
-//also need the samplers for texcoord, diffuse and specular
-	//I think these might be made back in another thing I code? 
-uniform sampler2D uImage03;
+
+uniform sampler2D uImage00;
+uniform sampler2D uImage01;
 uniform sampler2D uImage04;
 uniform sampler2D uImage07;
 
@@ -50,10 +49,9 @@ void main()
 	vec4 value; //I might sample and texture through this function to then put it into rtFragColor
 	//this is just a test so far to see if I wanna work stuff like this
 	sceneTexcoords = texture(uImage04, vTexcoord_atlas.xy);
-	value = texture(uImage01, sceneTexcoords.xy);
-	value *= texture(uImage03 ,sceneTexcoords.xy);
-	//value *= texture(uImage04 ,sceneTexcoords.xy);
-	value *= texture(uImage07 ,sceneTexcoords.xy);
+	value = texture(uImage00, sceneTexcoords.xy);
+	value *= texture(uImage01, sceneTexcoords.xy);
+	value *= texture(uImage07, sceneTexcoords.xy);
 
 	rtFragColor = value;
 }

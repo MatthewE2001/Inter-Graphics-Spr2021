@@ -26,7 +26,7 @@
 
 #define MAX_LIGHTS 1024
 
-// ****TO-DO:
+// ****DONE:
 //	-> declare view-space varyings from vertex shader
 //	-> declare point light data structure and uniform block
 //	-> declare uniform samplers (diffuse, specular & normal maps)
@@ -38,35 +38,14 @@
 
 uniform int uCount;
 
-//view space varyings
-in vec4 vPosition;
-in vec4 vNormal;
-in vec4 vTexcoord;
-in vec4 vPosition_screen;
-//declare point light data (matrix stack for the information I think)
-struct pointLightData
-{
-	vec4 position;					// position in rendering target space
-	vec4 worldPos;					// original position in world space
-	vec4 color;						// RGB color with padding
-	float radius;						// radius (distance of effect from center)
-	float radiusSq;					// radius squared (if needed)
-	float radiusInv;					// radius inverse (attenuation factor)
-	float radiusInvSq;					// radius inverse squared (attenuation factor)
-};
-//uniform block
-uniform uPointLightData
-{
-	pointLightData uLightData[MAX_LIGHTS]; //made it an array for max lights (maybe should be ucount?)
-};
-//uniform samplers
-uniform sampler2D uImage00; //idk if I need bindings for these? where does binding go? 
-uniform sampler2D uImage01;
-uniform sampler2D uImage02; //idk if it should be called exactly normalMap?
-uniform sampler2D uAtlas;
-
 layout (location = 0) out vec4 rtFragColor;
-layout (location = 1) out vec4 rtNormal;
+
+
+
+uniform sampler2D uImage00; // Diffuse Atlas
+uniform sampler2D uImage01; // Specular Atlas
+uniform sampler2D uImage02; //nrm
+uniform sampler2D uAtlas;
 
 // location of viewer in its own space is the origin
 const vec4 kEyePos_view = vec4(0.0, 0.0, 0.0, 1.0);
@@ -88,31 +67,49 @@ void calcPhongPoint(
 	in vec4 lightPos, in vec4 lightRadiusInfo, in vec4 lightColor
 );
 
+struct sPointLightData
+{
+	vec4 position;					// position in rendering target space
+	vec4 worldPos;					// original position in world space
+	vec4 color;						// RGB color with padding
+	float radius;						// radius (distance of effect from center)
+	float radiusSq;					// radius squared (if needed)
+	float radiusInv;					// radius inverse (attenuation factor)
+	float radiusInvSq;					// radius inverse squared (attenuation factor)
+};
+uniform ubLight
+{
+	sPointLightData uPointLightData[MAX_LIGHTS];
+};
+
+in vec4 vPosition;
+in vec4 vNormal;
+in vec4 vTexcoord;
+
+in vec4 vPosition_screen;
+
+
 void main()
-{	
-	vec4 normal = texture(uImage02, vTexcoord.xy); //idk if this is exactly what I want or not
-	normal = normalize(normal * 2.0 - vec4(1.0));
-	mat4 tbn; //tangent bitangent normal (also mat4 or mat3?)
-	vec4 specularSum = vec4(0.0);
-	vec4 diffuseSum = vec4(0.0);
-	vec4 diffuse, specular;
-	vec4 color = texture(uAtlas, vTexcoord.xy);
+{
+	vec4 N = normalize(texture(uImage02, vTexcoord.xy) * 2.0);
+
 	
 
-	// DUMMY OUTPUT: all fragments are OPAQUE MAGENTA
-	//rtFragColor = normal;
+	vec4 diffuseColor, specularColor;
+	vec4 finalDiff, finalSpec = vec4(0.0f);
+	vec4 color = texture(uAtlas, vTexcoord.xy);
 
-	for (int i = 0; i < uCount; i++) //ucount or max lights?
+	for(int i = 0; i < uCount; i++)
 	{
-		vec4 radiusInfo = vec4(uLightData[i].radius, uLightData[i].radiusSq, uLightData[i].radiusInv, uLightData[i].radiusInvSq);
+		vec4 radiusInfo = vec4(uPointLightData[i].radius, uPointLightData[i].radiusSq, uPointLightData[i].radiusInv, uPointLightData[i].radiusInvSq);
 
-		calcPhongPoint(diffuse, specular, kEyePos_view, vPosition, normal, color, uLightData[i].position,
-		radiusInfo, uLightData[i].color);
-
-		diffuseSum += diffuse;
-		specularSum += specular;
+		calcPhongPoint(diffuseColor,specularColor,kEyePos_view, vPosition, N, color, uPointLightData[i].position, radiusInfo, uPointLightData[i].color);
+		finalDiff += diffuseColor;
+		finalSpec += specularColor;
 	}
 
-	rtFragColor = vec4(diffuseSum.xyz + specularSum.xyz, 1.0);
-	rtNormal = normal;
+	rtFragColor = vec4((finalDiff+finalSpec).xyz,1.0);
+
+	// DUMMY OUTPUT: all fragments are OPAQUE MAGENTA
+	//rtFragColor = vec4(1.0, 0.0, 1.0, 1.0);
 }
