@@ -41,7 +41,7 @@
 
 void a3ssfx_update_graphics(a3_DemoState* demoState, a3_DemoMode2_SSFX* demoMode)
 {
-	// ****TO-DO:
+	// ****DONE:
 	//	-> uncomment transformation and light data uploads
 	//	-> add line to upload light transformations
 	//		(hint: just individual matrices, see scene update)
@@ -130,6 +130,14 @@ void a3ssfx_update_scene(a3_DemoState* demoState, a3_DemoMode2_SSFX* demoMode, a
 		//		(hint: determine the scale part, append position and multiply by 
 		//			projection matrix to arrive at a proper MVP for each light)
 		// update and transform light matrix
+		a3mat4 mv = {
+		1.0f, 0.0f, 0.0f, pointLightData->position.x,
+		0.0f, 1.0f, 0.0f, pointLightData->position.y,
+		0.0f, 0.0f, 1.0f, pointLightData->position.z,
+		0.0f, 0.0f, 0.0f, 1.0f
+		};
+
+		a3real4x4Product(pointLightMVP->m, projector->projectorMatrixStackPtr->projectionMat.m, mv.m);
 
 		//view space position calculation is important because out of the model view projection, we have model view (?) done
 		//...
