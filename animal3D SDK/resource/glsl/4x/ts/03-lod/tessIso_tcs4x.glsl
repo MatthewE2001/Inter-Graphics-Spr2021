@@ -24,7 +24,7 @@
 
 #version 450
 
-// ****TO-DO: 
+// ****DONE: 
 //	-> set tessellation levels, adjust as needed
 
 layout (vertices = 2) out;
@@ -33,5 +33,7 @@ uniform vec2 uLevelOuter;
 
 void main()
 {
-	
+	//so we need to set the tessellation values of how many lines and how many subdivisions
+	gl_TessLevelOuter[0] = uLevelOuter[0];
+	gl_TessLevelOuter[1] = uLevelOuter[1];
 }

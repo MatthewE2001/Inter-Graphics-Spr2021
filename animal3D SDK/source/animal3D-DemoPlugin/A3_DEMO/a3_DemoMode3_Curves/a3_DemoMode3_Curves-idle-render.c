@@ -112,11 +112,18 @@ a3ret a3vertexDrawableRenderIsoPatches(a3ui32 const count)
 {
 	if (count)
 	{
-		// ****TO-DO: 
+		// ****DONE: 
 		//	-> set patch vertices parameter for isolines
 		//	-> disable anything that would result in a VAO, VBO and/or IBO based render
 		//	-> invoke rendering enough vertices to cover all path segments
 		// force isoline patches
+
+		//this function is for the lines
+		glPatchParameteri(GL_PATCH_VERTICES, 2); //patches help with what we need to set up
+		glBindVertexArray(0); //0 turns it off, no description means no geometry
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); //turning off any buffers to make sure no geometry comes with the lines
+		glDrawArrays(GL_PATCHES, 0, count * 2); //count * 2 because you need two vertices for each patch I think
 
 		return 1;
 	}
@@ -135,6 +142,9 @@ a3ret a3vertexDrawableRenderTriPatches(a3_VertexDrawable const* drawable)
 		//	-> copy regular rendering algorithm
 		//	-> replace primitive type with "patches" keyword
 		// draw
+
+		//this function is for the models
+		//glpatchparameter(); //do I want patch parameter again?
 		
 		return 1;
 	}
