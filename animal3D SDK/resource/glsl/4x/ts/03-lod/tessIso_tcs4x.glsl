@@ -34,6 +34,6 @@ uniform vec2 uLevelOuter;
 void main()
 {
 	//so we need to set the tessellation values of how many lines and how many subdivisions
-	gl_TessLevelOuter[0] = uLevelOuter[0];
-	gl_TessLevelOuter[1] = uLevelOuter[1];
+	gl_TessLevelOuter[0] = uLevelOuter[0]; //number of lines
+	gl_TessLevelOuter[1] = uLevelOuter[1]; //number of subdivisions per line
 }
