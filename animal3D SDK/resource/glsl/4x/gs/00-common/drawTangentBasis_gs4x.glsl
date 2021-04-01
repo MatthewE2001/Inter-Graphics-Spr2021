@@ -42,10 +42,39 @@
 #define MAX_VERTICES 32
 
 layout (triangles) in;
+//gl_in[3];
 
 layout (line_strip, max_vertices = MAX_VERTICES) out;
 
 out vec4 vColor;
+
+in vbVertexData
+{
+	mat4 vTangentBasis_view;
+	vec4 vTexcoord_atlas;
+} vVertexData[];
+
+void drawWireframe()
+{
+	vColor = vec4(0.0, 1.0, 0.0, 1.0);
+	//get the vertices
+		//v0, v1, v2, v0
+	gl_Position = gl_in[0].gl_Position;
+	EmitVertex();
+	gl_Position = gl_in[1].gl_Position;
+	EmitVertex();
+	EndPrimitive();
+
+	vColor = vec4(0.0, 0.0, 1.0, 1.0);
+	gl_Position = gl_in[1].gl_Position; //two each of 1 and 2 to change color between lines
+	EmitVertex();
+	gl_Position = gl_in[2].gl_Position;
+	EmitVertex();
+	gl_Position = gl_in[2].gl_Position;
+	EmitVertex();
+	gl_Position = gl_in[0].gl_Position;
+	EmitVertex();
+}
 
 void main()
 {

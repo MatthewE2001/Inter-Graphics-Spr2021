@@ -59,8 +59,27 @@ void a3curves_update_animation(a3_DemoState* demoState, a3_DemoMode3_Curves* dem
 		//	-> update the animation timer
 		//		(hint: check if we've surpassed the segment's duration)
 		// teapot follows curved path
+		
+		//so I want to do spline I believe, should work best for curves
+			//catmull, bezier or hermite?
+		demoMode->curveSegmentTime += (a3f32)dt;
+		a3ui32 currentIndex = demoMode->curveSegmentIndex;
 
+		if (demoMode->curveSegmentTime >= demoMode->curveSegmentDuration)
+		{
+			demoMode->curveSegmentTime = 0;
+		}
 
+		if (demoMode->curveSegmentIndex == 0)
+		{
+			//a3CatmullRom(demoMode->curveSegmentIndex + 3, demoMode->curveSegmentIndex, demoMode->curveSegmentIndex + 1, demoMode->curveSegmentIndex + 2,
+				//demoMode->curveSegmentDuration);
+		}
+		else
+		{
+			//a3CatmullRom(demoMode->curveSegmentIndex - 1, demoMode->curveSegmentIndex, demoMode->curveSegmentIndex + 1, demoMode->curveSegmentIndex + 2,
+				//demoMode->curveSegmentDuration);
+		}
 	}
 }
 

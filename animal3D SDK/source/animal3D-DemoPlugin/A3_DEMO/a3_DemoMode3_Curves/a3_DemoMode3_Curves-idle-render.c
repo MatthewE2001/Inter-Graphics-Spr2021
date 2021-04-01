@@ -144,7 +144,18 @@ a3ret a3vertexDrawableRenderTriPatches(a3_VertexDrawable const* drawable)
 		// draw
 
 		//this function is for the models
-		//glpatchparameter(); //do I want patch parameter again?
+		glPatchParameteri(GL_PATCH_VERTICES, 3);
+		glBindVertexArray(drawable->vertexArray->handle->handle);
+		
+		if (drawable->indexType)
+		{
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, drawable->indexBuffer->handle->handle);
+			glDrawElements(GL_PATCHES, drawable->count, drawable->indexType, drawable->indexing);
+		}
+		else
+			glDrawArrays(GL_PATCHES, drawable->first, drawable->count);
+		return 1;
+
 		
 		return 1;
 	}

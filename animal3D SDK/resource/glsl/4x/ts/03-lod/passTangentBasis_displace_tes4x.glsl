@@ -35,7 +35,14 @@
 
 layout (triangles, equal_spacing) in;
 
+out vbVertexData
+{
+	mat4 vTangentBasis_view;
+	vec4 vTexcoord_atlas;
+};
+
 void main()
 {
-	
+	//gl_TessCoord = barycentric
+	//
 }
