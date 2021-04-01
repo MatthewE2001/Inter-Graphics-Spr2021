@@ -63,7 +63,44 @@ vec3 calcParallaxCoord(in vec3 coord, in vec3 viewVec, const int steps)
 	// ****TO-DO:
 	//	-> step along view vector until intersecting height map
 	//	-> determine precise intersection point, return resulting coordinate
-	
+	vec3 cEnd = vec3(coord.xy - (viewVec.xy/ viewVec.z) * uSize, 0);
+	float n = float(steps);
+	float dt = 1/n;
+	float t = 0.0f;
+	coord.z = 1;
+
+	vec3 coordT = mix (coord, cEnd, t);
+	vec3 previousCoordT = coord;
+
+	float coordHeight = coordT.z;
+	float previousHeight = previousCoordT.z;
+
+	float bumpHeight = texture(uTex_hm, coordT.xy).x;
+	float previousBumpHeight = texture(uTex_hm, coordT.xy).x;
+
+	while (t <= 1)
+	{
+		if (bumpHeight > coordHeight)
+		{
+			float deltaH = coordHeight - previousHeight;
+			float deltaB = bumpHeight - previousBumpHeight;
+
+			float x = (previousHeight - previousBumpHeight) / (deltaB - deltaH);
+			return mix(previousCoordT, coordT, x);
+		}
+
+		previousCoordT = coordT;
+		coordT = mix(coord, cEnd, t);
+
+		previousHeight = coordHeight;
+		coordHeight = coordT.z;
+
+		previousBumpHeight = bumpHeight;
+		float bumpHeight = texture(uTex_hm, coordT.xy).x;
+
+		t += dt;
+	}
+
 	// done
 	return coord;
 }
@@ -88,6 +125,8 @@ void main()
 	//	-> convert view vector into tangent space
 	//		(hint: the above TBN bases convert tangent to view, figure out 
 	//		an efficient way of representing the required matrix operation)
+	mat4 TBN = inverse(mat4(tan_view, bit_view, nrm_view, pos_view));
+
 	// tangent-space view vector
 	vec3 viewVec_tan = vec3(
 		0.0,

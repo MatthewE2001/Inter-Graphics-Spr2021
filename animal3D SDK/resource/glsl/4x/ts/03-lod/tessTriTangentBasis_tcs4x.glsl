@@ -44,6 +44,13 @@ in vbVertexData
 	vec4 vTexcoord_atlas;
 } vVertexData[];
 
+out vbVertexData_tess
+{
+	mat4 vTangentBasis_view;
+	vec4 vTexcoord_atlas;
+} vVertexData_tess[];
+
+
 void main()
 {
 	vVertexData;

@@ -62,24 +62,25 @@ void a3curves_update_animation(a3_DemoState* demoState, a3_DemoMode3_Curves* dem
 		
 		//so I want to do spline I believe, should work best for curves
 			//catmull, bezier or hermite?
+		//a3ui32 currentIndex = demoMode->curveSegmentIndex;
+		a3ui32 start = demoMode->curveSegmentIndex;
+		a3ui32 end = (start + 1) % demoMode->curveWaypointCount;
+
 		demoMode->curveSegmentTime += (a3f32)dt;
-		a3ui32 currentIndex = demoMode->curveSegmentIndex;
 
 		if (demoMode->curveSegmentTime >= demoMode->curveSegmentDuration)
 		{
-			demoMode->curveSegmentTime = 0;
+			demoMode->curveSegmentTime -= demoMode->curveSegmentDuration;
+			start = end;
+			end = (start + 1) % demoMode->curveWaypointCount;
 		}
 
-		if (demoMode->curveSegmentIndex == 0)
-		{
-			//a3CatmullRom(demoMode->curveSegmentIndex + 3, demoMode->curveSegmentIndex, demoMode->curveSegmentIndex + 1, demoMode->curveSegmentIndex + 2,
-				//demoMode->curveSegmentDuration);
-		}
-		else
-		{
-			//a3CatmullRom(demoMode->curveSegmentIndex - 1, demoMode->curveSegmentIndex, demoMode->curveSegmentIndex + 1, demoMode->curveSegmentIndex + 2,
-				//demoMode->curveSegmentDuration);
-		}
+		demoMode->curveSegmentIndex = start;
+		demoMode->curveSegmentParam = demoMode->curveSegmentTime * demoMode->curveSegmentDurationInv;
+
+		a3real4CatmullRom(sceneObjectData->position.v, demoMode->curveWaypoint[(start - 1) % demoMode->curveWaypointCount].v,
+			demoMode->curveWaypoint[start % demoMode->curveWaypointCount].v, demoMode->curveWaypoint[end % demoMode->curveWaypointCount].v,
+			demoMode->curveWaypoint[(end + 1) % demoMode->curveWaypointCount].v, demoMode->curveSegmentParam);
 	}
 }
 

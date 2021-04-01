@@ -49,8 +49,22 @@ void main()
 	int i1 = (i0 + 1) % uCount;
 	float t = gl_TessCoord.x;
 
-	vec4 point = mix(curveWaypoint[i0], curveWaypoint[i1], t);
-	gl_Position = uP * point;
+	vec4 point = curveWaypoint[(i0 -1) % uCount];
+	vec4 point1 = curveWaypoint[i0];
+	vec4 point2 = curveWaypoint[i1];
+	vec4 point3 = curveWaypoint[(i1 + 1) % uCount];
+
+	mat4 influence = mat4(point, point1, point2, point3);
+	vec4 tVector = vec4(1, t, pow(t, 2), pow(t, 3));
+
+	vec4 test = vec4(-t + 2 * pow(t, 2) - pow(t, 3),
+					2 - 5 * pow(t, 2) + 3 * pow(t, 3),
+					t + 4 * pow(t, 2) - 3 * pow(t, 3),
+					-pow(t, 2) + pow(t, 3));
+
+	vec4 p = 0.5 * (influence * test);
+
+	gl_Position = uP * p;
 
 	vColor = vec4(0.5, 0.5, gl_TessCoord[0], 1.0);
 }
