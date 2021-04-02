@@ -35,6 +35,10 @@
 
 layout (triangles, equal_spacing) in;
 
+uniform sampler2D uTex_hm;
+uniform mat4 uMV;
+uniform mat4 uP;
+
 in vbVertexData_tess
 {
 	mat4 vTangentBasis_view;
@@ -49,6 +53,18 @@ out vbVertexData
 
 void main()
 {
+	for (int i = 0; i < 4; i++)
+	{
+		vTangentBasis_view[i] = gl_TessCoord.x * vVertexData_tess[0].vTangentBasis_view[i] + 
+		gl_TessCoord.y * vVertexData_tess[1].vTangentBasis_view[i] + gl_TessCoord.z * vVertexData_tess[2].vTangentBasis_view[i];
+	}
+
+	vTexcoord_atlas = gl_TessCoord.x * vVertexData_tess[0].vTexcoord_atlas + gl_TessCoord.y * vVertexData_tess[1].vTexcoord_atlas
+						+ gl_TessCoord.z * vVertexData_tess[2].vTexcoord_atlas;
+
 	//gl_TessCoord = barycentric
-	//
+
+	//vTangentBasis_view = vVertexData_tess[0].vTangentBasis_view;
+
+	gl_Position = uP * vTangentBasis_view[3];
 }

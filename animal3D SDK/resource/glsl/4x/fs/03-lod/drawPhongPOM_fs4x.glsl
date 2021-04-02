@@ -69,14 +69,14 @@ vec3 calcParallaxCoord(in vec3 coord, in vec3 viewVec, const int steps)
 	float t = 0.0f;
 	coord.z = 1;
 
-	vec3 coordT = mix (coord, cEnd, t);
+	vec3 coordT = mix(coord, cEnd, t);
 	vec3 previousCoordT = coord;
 
 	float coordHeight = coordT.z;
 	float previousHeight = previousCoordT.z;
 
 	float bumpHeight = texture(uTex_hm, coordT.xy).x;
-	float previousBumpHeight = texture(uTex_hm, coordT.xy).x;
+	float previousBumpHeight = texture(uTex_hm, previousCoordT.xy).x;
 
 	while (t <= 1)
 	{
@@ -128,11 +128,7 @@ void main()
 	mat4 TBN = inverse(mat4(tan_view, bit_view, nrm_view, pos_view));
 
 	// tangent-space view vector
-	vec3 viewVec_tan = vec3(
-		0.0,
-		0.0,
-		0.0
-	);
+	vec3 viewVec_tan = (TBN * viewVec).xyz;
 	
 	// parallax occlusion mapping
 	vec3 texcoord = vec3(vTexcoord_atlas.xy, uSize);

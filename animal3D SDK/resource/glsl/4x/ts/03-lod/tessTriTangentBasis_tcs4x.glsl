@@ -24,7 +24,7 @@
 
 #version 450
 
-// ****TO-DO: 
+// ****DONE?: 
 //	-> declare inbound and outbound varyings to pass along vertex data
 //		(hint: inbound matches VS naming but is now an array)
 //		(hint: outbound matches TES naming and is also an array)
@@ -53,7 +53,8 @@ out vbVertexData_tess
 
 void main()
 {
-	vVertexData;
+	vVertexData_tess[gl_InvocationID].vTangentBasis_view = vVertexData[gl_InvocationID].vTangentBasis_view;
+	vVertexData_tess[gl_InvocationID].vTexcoord_atlas = vVertexData[gl_InvocationID].vTexcoord_atlas;
 
 	gl_TessLevelOuter[0] = uLevelOuter[0];
 	gl_TessLevelOuter[1] = uLevelOuter[1];
