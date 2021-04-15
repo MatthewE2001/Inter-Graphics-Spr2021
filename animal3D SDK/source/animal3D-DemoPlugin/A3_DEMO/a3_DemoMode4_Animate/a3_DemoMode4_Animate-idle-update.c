@@ -80,13 +80,26 @@ inline int a3animate_updateSkeletonLocalSpace(a3_Hierarchy const* hierarchy,
 
 			// ****TO-DO:
 			// interpolate channels
+			//adjust the position, scale, rotation?
+			tmpPose.position = p0->position; //idk how exactly I interpolate things?
+			tmpPose.scale = p0->scale;
+			tmpPose.euler = p0->euler;
 
+			
+			//also the rotation of the object
+			
 			// ****TO-DO:
 			// concatenate base pose
+			//rotate and then translate
+			a3demo_rotateProjectorSceneObject();
+			a3demo_moveProjectorSceneObject();
+
+			a3quatSetEulerXYZ();
 
 			// ****TO-DO:
 			// convert to matrix
-
+			//there should be a function that can help with this in animal3D
+			a3quatConvertToMat4Translate();
 		}
 
 		// done

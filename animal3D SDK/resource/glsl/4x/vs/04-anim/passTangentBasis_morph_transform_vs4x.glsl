@@ -47,6 +47,16 @@
 	//texcoord because always the same in 2D so its shared
 	//bitangent because it is normal x tangent
 
+struct sMorphTarget
+{
+	  vec4 position;
+	  vec3 normal; float nPad; //to handle when it needs full vec4 values include the floats
+	  vec3 tangent; float tPad;
+};
+
+layout (location = 0) in sMorphTarget aMorphTarget[5];
+//then I just need to include texcoord still
+
 struct sModelMatrixStack
 {
 	mat4 modelMat;						// model matrix (object -> world)
