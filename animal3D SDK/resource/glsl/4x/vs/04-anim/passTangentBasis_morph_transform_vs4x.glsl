@@ -34,28 +34,44 @@
 //		(hint: results can be stored in local variables named after the 
 //		complete tangent basis attributes provided before any changes)
 
+/*
 layout (location = 0) in vec4 aPosition;
 layout (location = 2) in vec3 aNormal;
 layout (location = 8) in vec4 aTexcoord;
 layout (location = 10) in vec3 aTangent;
 layout (location = 11) in vec3 aBitangent;
+*/
 
-//parts of a single morph target
-	//position, normal, tangent
-	//can have 16, 16 / 3 = 5 (cause int)
-//Not part of a morph target
-	//texcoord because always the same in 2D so its shared
-	//bitangent because it is normal x tangent
+//what is part of a single morph target:
+// -> position, normal, tangent
+// -> 16 available, 16 / 3 = 5 (int)
+
+//What is not part of a single morph target
+// -> texcoord - shared because it's always the same in 2D
+// -> bitangent: normal x tangent
 
 struct sMorphTarget
 {
-	  vec4 position;
-	  vec3 normal; float nPad; //to handle when it needs full vec4 values include the floats
-	  vec3 tangent; float tPad;
+	vec4 position;
+	vec3 normal;      float nPad;
+	vec3 tangent;     float tPad;
+
 };
 
 layout (location = 0) in sMorphTarget aMorphTarget[5];
-//then I just need to include texcoord still
+//texcoord
+layout (location = 8) in vec4 aTexcoord;
+
+
+struct sAnimMorphTeapot
+{
+	float duration, durationInv;
+	float time, param;
+	int index, count;
+};
+
+uniform sAnimMorphTeapot uAnimMorphTeapot[1];
+
 
 struct sModelMatrixStack
 {
@@ -83,22 +99,44 @@ out vbVertexData {
 flat out int vVertexID;
 flat out int vInstanceID;
 
+
+vec4 interp(vec4 left, vec4 right, float param)
+{
+	return mix(left,right,param);
+}
+
 void main()
 {
 	// DUMMY OUTPUT: directly assign input position to output position
 	//gl_Position = aPosition;
-	vec4 aPosition;
-	vec3 aTangent, aBitTangent, aNormal;
+	
+	
+	int i0 = uAnimMorphTeapot[0].index;
+	int i1 = (i0+1)%uAnimMorphTeapot[0].count;
+	
+	//results of morphing
+	vec4 aPosition = interp(aMorphTarget[i0].position, aMorphTarget[i1].position, uAnimMorphTeapot[0].param);
+	vec3 aTangent = interp(vec4(aMorphTarget[i0].tangent,aMorphTarget[i0].tPad), vec4(aMorphTarget[i1].tangent,aMorphTarget[i1].tPad), uAnimMorphTeapot[0].param).xyz;
+	
+	vec3 aNormal = interp(vec4(aMorphTarget[i0].normal,aMorphTarget[i0].nPad), vec4(aMorphTarget[i1].normal,aMorphTarget[i1].nPad), uAnimMorphTeapot[0].param).xyz;
+	vec3 aBitangent = aNormal * aTangent;
 
-	//test is to copy first morph target
+	//testing: copy the first morph target only
+
+	/*
+	vec4 aPosition = aMorphTarget[0].position;
+	vec3 aTangent = aMorphTarget[0].tangent;
+	vec3 aNormal = aMorphTarget[0].normal;
+	vec3 aBitangent = cross(aNormal,aTangent);
+	*/
 	
 	sModelMatrixStack t = uModelMatrixStack[uIndex];
 	
-	//vTangentBasis_view = t.modelViewMatInverseTranspose * mat4(aTangent, 0.0, aBitangent, 0.0, aNormal, 0.0, vec4(0.0));
+	vTangentBasis_view = t.modelViewMatInverseTranspose * mat4(aTangent, 0.0, aBitangent, 0.0, aNormal, 0.0, vec4(0.0));
 	vTangentBasis_view[3] = t.modelViewMat * aPosition;
 	gl_Position = t.modelViewProjectionMat * aPosition;
 	
-	//vTexcoord_atlas = t.atlasMat * aTexcoord;
+	vTexcoord_atlas = t.atlasMat * aTexcoord;
 
 	vVertexID = gl_VertexID;
 	vInstanceID = gl_InstanceID;
