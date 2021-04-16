@@ -34,11 +34,11 @@
 //		(hint: results can be stored in local variables named after the 
 //		complete tangent basis attributes provided before any changes)
 
-//layout (location = 0) in vec4 aPosition;
-//layout (location = 2) in vec3 aNormal;
-//layout (location = 8) in vec4 aTexcoord;
-//layout (location = 10) in vec3 aTangent;
-//layout (location = 11) in vec3 aBitangent;
+layout (location = 0) in vec4 aPosition;
+layout (location = 2) in vec3 aNormal;
+layout (location = 8) in vec4 aTexcoord;
+layout (location = 10) in vec3 aTangent;
+layout (location = 11) in vec3 aBitangent;
 
 //parts of a single morph target
 	//position, normal, tangent
@@ -54,7 +54,7 @@ struct sMorphTarget
 	  vec3 tangent; float tPad;
 };
 
-//layout (location = 0) in sMorphTarget aMorphTarget[5];
+layout (location = 0) in sMorphTarget aMorphTarget[5];
 //then I just need to include texcoord still
 
 struct sModelMatrixStack
@@ -95,7 +95,7 @@ void main()
 	sModelMatrixStack t = uModelMatrixStack[uIndex];
 	
 	//vTangentBasis_view = t.modelViewMatInverseTranspose * mat4(aTangent, 0.0, aBitangent, 0.0, aNormal, 0.0, vec4(0.0));
-	//vTangentBasis_view[3] = t.modelViewMat * aPosition;
+	vTangentBasis_view[3] = t.modelViewMat * aPosition;
 	gl_Position = t.modelViewProjectionMat * aPosition;
 	
 	//vTexcoord_atlas = t.atlasMat * aTexcoord;
