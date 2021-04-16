@@ -17,7 +17,7 @@
 /*
 	animal3D SDK: Minimal 3D Animation Framework
 	By Daniel S. Buckstein
-	
+
 	a3_DemoMode4_Animate-idle-update.c
 	Demo mode implementations: animation scene.
 
@@ -70,36 +70,43 @@ inline int a3animate_updateSkeletonLocalSpace(a3_Hierarchy const* hierarchy,
 		a3f32 u = keyCtrl->param;
 		a3_SceneObjectData const* p0 = keyPoseArray[i0 + 1], * p1 = keyPoseArray[i1 + 1], * pBase = keyPoseArray[0];
 		a3_SceneObjectData tmpPose;
-		
+
 		for (j = 0;
 			j < hierarchy->numNodes;
 			++j, ++p0, ++p1, ++pBase, ++localSpaceArray)
 		{
 			// testing: copy base pose
-			tmpPose = *pBase;
+			//tmpPose = *pBase;
 
-			// ****TO-DO:
+			// ****DONE:
 			// interpolate channels
-			//adjust the position, scale, rotation?
-			tmpPose.position = p0->position; //idk how exactly I interpolate things?
-			tmpPose.scale = p0->scale;
-			tmpPose.euler = p0->euler;
+			a3real4Lerp(tmpPose.position.v, p0->position.v, p1->position.v, u);
+			a3real4Lerp(tmpPose.euler.v, p0->euler.v, p1->euler.v, u);
+			a3real3Lerp(tmpPose.scale.v, p0->scale.v, p1->scale.v, u);
 
-			
-			//also the rotation of the object
-			
-			// ****TO-DO:
+			a3clamp(0, 360, tmpPose.euler.x);
+			a3clamp(0, 360, tmpPose.euler.y);
+			a3clamp(0, 360, tmpPose.euler.z);
+
+			// ****DONE:
 			// concatenate base pose
-			//rotate and then translate
-			a3demo_rotateProjectorSceneObject();
-			a3demo_moveProjectorSceneObject();
+			a3real4Sum(tmpPose.euler.v, pBase->euler.v, tmpPose.euler.v);
+			a3real4Sum(tmpPose.position.v, pBase->position.v, tmpPose.position.v);
+			a3real3ProductComp(tmpPose.scale.v, pBase->scale.v, tmpPose.scale.v);
 
-			a3quatSetEulerXYZ();
 
-			// ****TO-DO:
+			// ****DONE:
 			// convert to matrix
-			//there should be a function that can help with this in animal3D
-			a3quatConvertToMat4Translate();
+
+
+
+			a3mat4 scale_translation = { tmpPose.scale.x, 0, 0, 0,
+										0, tmpPose.scale.y, 0, 0,
+										0,0, tmpPose.scale.z,0,
+										tmpPose.position.x, tmpPose.position.y, tmpPose.position.z, 1 };
+			a3real4x4SetRotateXYZ(localSpaceArray->m, tmpPose.euler.x, tmpPose.euler.y, tmpPose.euler.z);
+
+			a3real4x4Concat(scale_translation.m, localSpaceArray->m);
 		}
 
 		// done
@@ -113,10 +120,23 @@ inline int a3animate_updateSkeletonObjectSpace(a3_Hierarchy const* hierarchy,
 {
 	if (hierarchy && objectSpaceArray && localSpaceArray)
 	{
-		// ****TO-DO: 
+		// ****DONE: 
 		// forward kinematics
-		//a3ui32 j;
-		//a3i32 jp;
+		a3ui32 j;
+		a3i32 jp;
+
+		for (j = 0; j < hierarchy->numNodes; j++)
+		{
+			jp = hierarchy->nodes[j].parentIndex;
+			if (jp == -1)
+			{
+				objectSpaceArray[j] = localSpaceArray[j];
+			}
+			else
+			{
+				a3real4x4Product(objectSpaceArray[j].m, objectSpaceArray[jp].m, localSpaceArray[j].m);
+			}
+		}
 
 		// done
 		return 1;
